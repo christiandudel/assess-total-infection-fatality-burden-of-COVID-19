@@ -21,8 +21,8 @@ pdf(file="association-total-IFR-mean-age-infected-individuals.pdf", width=10, he
 
 par(fig = c(0,1,0,1), las=1, mai=c(1.2,0.4,0.8,0.0))
 
-plot(-100,-100,xlim=c(0,80),ylim=c(0,4.5),xlab="Mean age of infections", ylab="", main="", axes=FALSE)
-title(bquote(atop("Association between mean age of infections and total IFR, in %")),font.main=2)
+plot(-100,-100,xlim=c(0,80),ylim=c(0,4.5),xlab="Mean age of infected individuals", ylab="", main="", axes=FALSE)
+title(bquote(atop("Association between mean age of infected individuals and total IFR, in %")),font.main=2)
 
 points(x=seq(0,70,length=3),y=rep(4.5,3),pch=20,cex=1.8,col=pal[1:3])
 text(x=seq(0,70,length=3),y=rep(4.5,3),c(names(pal)[1:3]),font=2,pos=4,cex=0.7)
@@ -107,7 +107,7 @@ pdf(file="association-total-IFR-median-age-infected-individuals.pdf", width=10, 
 
 par(fig = c(0,1,0,1), las=1, mai=c(1.2,0.4,0.8,0.0))
 
-plot(-100,-100,xlim=c(0,80),ylim=c(0,4.5),xlab="Median age of infections", ylab="", main="", axes=FALSE)
+plot(-100,-100,xlim=c(0,80),ylim=c(0,4.5),xlab="Median age of infected individuals", ylab="", main="", axes=FALSE)
 title(bquote(atop("Association between median age of infected individuals and total IFR, in %")),font.main=2)
 
 points(x=seq(0,70,length=3),y=rep(4.5,3),pch=20,cex=1.8,col=pal[1:3])
