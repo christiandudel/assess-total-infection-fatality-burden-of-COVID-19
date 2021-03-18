@@ -1,0 +1,28 @@
+
+#
+## Data files to download from UNWPP 2019:
+#
+
+1. WPP2019_INT_F03_2_POPULATION_BY_AGE_ANNUAL_MALE.xlsx
+
+https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/5_Interpolated/WPP2019_INT_F03_2_POPULATION_BY_AGE_ANNUAL_MALE.xlsx
+
+2. WPP2019_INT_F03_3_POPULATION_BY_AGE_ANNUAL_FEMALE.xlsx
+
+https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/5_Interpolated/WPP2019_INT_F03_3_POPULATION_BY_AGE_ANNUAL_FEMALE.xlsx
+
+3. WPP2019_MORT_F17_1_ABRIDGED_LIFE_TABLE_BOTH_SEXES.xlsx
+
+https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/3_Mortality/WPP2019_MORT_F17_1_ABRIDGED_LIFE_TABLE_BOTH_SEXES.xlsx
+
+4. WPP2019_MORT_F17_2_ABRIDGED_LIFE_TABLE_MALE.xlsx
+
+https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/3_Mortality/WPP2019_MORT_F17_2_ABRIDGED_LIFE_TABLE_MALE.xlsx
+
+5. WPP2019_MORT_F17_3_ABRIDGED_LIFE_TABLE_FEMALE.xlsx
+
+https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/3_Mortality/WPP2019_MORT_F17_3_ABRIDGED_LIFE_TABLE_FEMALE.xlsx
+
+6. WPP2019_POP_F05_MEDIAN_AGE.xlsx
+
+https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F05_MEDIAN_AGE.xlsx
