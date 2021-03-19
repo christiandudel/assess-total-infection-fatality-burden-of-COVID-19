@@ -1,6 +1,6 @@
 library(covidAgeData)
 library(here)
-library(DemoTools)
+library(DemoTools) # remotes::install_github("timriffe/DemoTools")
 library(readxl)
 library(tidyverse)
 #
@@ -263,7 +263,7 @@ agg_lt <-
 # TR: alternatively, one could send in ndx as Deaths and nLx as exposures,
 # presumably arithmetic averaged. Result could be slightly different. This also differs
 # from results after taking means of nAx, lx, nMx 
-library(DemoTools)
+
 lt_unweighted <- lt_abridged2single(nMx = agg_lt$nMx, Age = agg_lt$Age)
 
 
@@ -304,8 +304,8 @@ pop_weights <-
 
 #### 3.7.1 Ungroup population weighted average of lt_survivors into single years of age:
 
-lt_survivors_single_age_pop_weight <- 
-  get_ungrouped_lx_100(current_lx_data = rowSums(t(apply(X = lt_survivors, 1, FUN = function(x){pop_weights * x})))) 
+# lt_survivors_single_age_pop_weight <- 
+#   get_ungrouped_lx_100(current_lx_data = rowSums(t(apply(X = lt_survivors, 1, FUN = function(x){pop_weights * x})))) 
 
 # TR: this one looks tricker to guess, but will try.
 
@@ -313,22 +313,43 @@ lt_survivors_single_age_pop_weight <-
 
 #### 3.7.2 Determine ax for single years of age using population weighted average of major countries for age 0:
 
-ax_pop_weight <- c(rowSums(t(apply(X=lt_ax,1,FUN=function(x){pop_weights*x})))[1],rep(0.5,length(seq(2,101,1))))
+# ax_pop_weight <- c(rowSums(t(apply(X=lt_ax,1,FUN=function(x){pop_weights*x})))[1],rep(0.5,length(seq(2,101,1))))
+# 
+# #### 3.7.3 Ungroup population weighted average lt_mx into single years of age:
+# 
+# lt_mx_single_age_pop_weight <- get_ungrouped_lx_100(current_lx_data=rowSums(t(apply(X=lt_mx,1,FUN=function(x){pop_weights*x})))) 
+# --------------------------------
+# TR redux- just weight nMx for now
+wt_lt <-
+  lt_survivors %>% 
+  left_join(pop_weights) %>% 
+  group_by(Age) %>% 
+  summarize(nMx = sum(nMx * Prop))
 
-#### 3.7.3 Ungroup population weighted average lt_mx into single years of age:
+lt_weighted <-  lt_abridged2single(nMx = wt_lt$nMx, Age = wt_lt$Age)
 
-lt_mx_single_age_pop_weight <- get_ungrouped_lx_100(current_lx_data=rowSums(t(apply(X=lt_mx,1,FUN=function(x){pop_weights*x})))) 
+# TR: get names ex vectors for saving
+ex_major_countries_Levin        <- lt_unweighted$ex
+names(ex_major_countries_Levin) <- lt_unweighted$Age
 
+ex_major_countries_Levin_pop_weight        <- lt_weighted$ex
+names(ex_major_countries_Levin_pop_weight) <- lt_weighted$Age
 ### 3.7.4 Compute life table ex based on lx, ax, and mx by single years of age:
 
-ex_major_countries_Levin_pop_weight <- lexp_age_specific(lx=as.vector(lt_survivors_single_age_pop_weight$y),ax=ax_pop_weight,mx=as.vector(lt_mx_single_age_pop_weight$y)) 
-names(ex_major_countries_Levin_pop_weight) <- 0:100
-ex_major_countries_Levin_pop_weight
+# ex_major_countries_Levin_pop_weight <- lexp_age_specific(lx=as.vector(lt_survivors_single_age_pop_weight$y),ax=ax_pop_weight,mx=as.vector(lt_mx_single_age_pop_weight$y)) 
+# names(ex_major_countries_Levin_pop_weight) <- 0:100
+# ex_major_countries_Levin_pop_weight
 
 ## 3.8 Save output: 
+dump("ex_major_countries_Levin_pop_weight",
+     file=here::here("input-data", "ex_major_countries_Levin_pop_weight_TR.R"))
+dump("ex_major_countries_Levin",
+     file=here::here("input-data", "ex_major_countries_Levin_TR.R"))
 
-dump("ex_major_countries_Levin_pop_weight",file="ex_major_countries_Levin_pop_weight.R")
-dump("ex_major_countries_Levin",file="ex_major_countries_Levin.R")
+# dump("ex_major_countries_Levin_pop_weight",
+#      file="ex_major_countries_Levin_pop_weight.R")
+# dump("ex_major_countries_Levin",
+#      file="ex_major_countries_Levin.R")
 
 #
 ## 4. Scaling reference IFRs  
