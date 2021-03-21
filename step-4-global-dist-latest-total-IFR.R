@@ -403,8 +403,224 @@ dev.off()
 
 
 ## 4. Sensitivity of latest total IFR
-#### towards I_x based on excess mortality death counts
+#### towards I_x based on either reported deaths (COVer-AGE-DB) or excess mortality deaths (STMF)
 
+## 4.1 Align country names between excess mortality deaths (STMF) and reported deaths (COVer-AGE-DB):
+
+dimnames(excess_deaths)
+dimnames(excess_deaths)[[1]][which(dimnames(excess_deaths)[[1]]=="Republic of Korea")] <- "South Korea" 
+dimnames(excess_deaths)[[1]][which(dimnames(excess_deaths)[[1]]=="Northern Irland")] <- "Northern Ireland" 
+dimnames(excess_deaths)[[1]][which(dimnames(excess_deaths)[[1]]=="England_Wales")] <- "England and Wales" 
+
+## 4.2 Compare set of countries and dates between reported and excess mortality deaths:  
+
+dimnames(excess_deaths)
+dimnames(deaths_array)
+
+## 4.3 To split 90+ excess deaths into 90-94 and 95+ excess mortality deaths: 
+
+deaths_array_share_95plus_of_90plus <- rowSums(deaths_array[,,as.character(seq(95,100,5))],dims=2,na.rm=TRUE) / rowSums(deaths_array[,,as.character(seq(90,100,5))],dims=2,na.rm=TRUE)
+
+## 4.4 Estimate numbers of infections and total IFR based on excess mortality deaths:
+
+  row_names <- all_countries
+  column_names <- as.character(sort(unique(dat_deaths$Date)))
+  matrix_names <- seq(0,95,5)
+  matrix_names_2 <- c("low95","central","up95")
+
+  infections_array_excessDeaths_Verity_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(seq(0,95,5)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names,matrix_names_2))
+  infections_array_excessDeaths_Salje_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(seq(0,95,5)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names,matrix_names_2))
+  infections_array_excessDeaths_Levin_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(seq(0,95,5)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names,matrix_names_2))
+
+########
+########
+
+  row_names <- all_countries
+  column_names <- as.character(sort(unique(dat_deaths$Date)))
+  matrix_names <- c("low95","central","up95")
+
+  total_IFR_array_excessDeaths_Verity_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names))
+  total_IFR_array_excessDeaths_Salje_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(c("low95","central","up95"))),
+ 								dimnames=list(row_names,column_names,matrix_names))
+  total_IFR_array_excessDeaths_Levin_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names))
+
+########
+########
+
+  for(date in 1:length(sort(unique(dat_deaths$Date)))){
+	print(date)
+	current_date <- sort(unique(dat_deaths$Date))[date]
+	if(length(which(dimnames(excess_deaths)[[2]]==current_date))>0){
+		for(country in 1:length(all_countries)){
+			current_coi <- all_countries[country]  
+			if(length(which(dimnames(excess_deaths)[[1]]==current_coi))>0){
+				if(!is.na(sum(excess_deaths[current_coi,as.character(current_date),"b",])) & length(excess_deaths[current_coi,as.character(current_date),"b",])==19){
+					current_coi_current_date_deaths <- excess_deaths[current_coi,as.character(current_date),"b",]
+					current_to_add_95plus <- current_coi_current_date_deaths["90"] * deaths_array_share_95plus_of_90plus[current_coi,as.character(current_date)]
+					current_to_replace_90 <- current_coi_current_date_deaths["90"] - current_to_add_95plus
+					current_coi_current_date_deaths["90"] <- current_to_replace_90 
+					current_coi_current_date_deaths["95"] <- current_to_add_95plus 
+
+			#### Verity, scaled:
+
+			## central IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Verity_scaled_central[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Verity_scaled_central[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Verity_scaled[current_coi,as.character(current_date),,"central"] <- current_infections
+			total_IFR_array_excessDeaths_Verity_scaled[current_coi,as.character(current_date),"central"] <- current_total_ifr
+
+			## low95 IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Verity_scaled_low[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Verity_scaled_low[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Verity_scaled[current_coi,as.character(current_date),,"low95"] <- current_infections
+			total_IFR_array_excessDeaths_Verity_scaled[current_coi,as.character(current_date),"low95"] <- current_total_ifr
+
+			## up95 IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Verity_scaled_up[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Verity_scaled_up[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Verity_scaled[current_coi,as.character(current_date),,"up95"] <- current_infections
+			total_IFR_array_excessDeaths_Verity_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
+
+			#### Salje, scaled:
+
+			## central IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Salje_scaled_central[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Salje_scaled_central[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Salje_scaled[current_coi,as.character(current_date),,"central"] <- current_infections
+			total_IFR_array_excessDeaths_Salje_scaled[current_coi,as.character(current_date),"central"] <- current_total_ifr
+
+			## low95 IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Salje_scaled_low[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Salje_scaled_low[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Salje_scaled[current_coi,as.character(current_date),,"low95"] <- current_infections
+			total_IFR_array_excessDeaths_Salje_scaled[current_coi,as.character(current_date),"low95"] <- current_total_ifr
+
+			## up95 IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Salje_scaled_up[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Salje_scaled_up[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Salje_scaled[current_coi,as.character(current_date),,"up95"] <- current_infections
+			total_IFR_array_excessDeaths_Salje_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
+
+			#### Levin, scaled:
+
+			## central IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Levin_scaled_central[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Levin_scaled_central[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Levin_scaled[current_coi,as.character(current_date),,"central"] <- current_infections
+			total_IFR_array_excessDeaths_Levin_scaled[current_coi,as.character(current_date),"central"] <- current_total_ifr
+
+			## low95 IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Levin_scaled_low[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Levin_scaled_low[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Levin_scaled[current_coi,as.character(current_date),,"low95"] <- current_infections
+			total_IFR_array_excessDeaths_Levin_scaled[current_coi,as.character(current_date),"low95"] <- current_total_ifr
+
+			## up95 IFR_x^COI:
+			current_infections <- current_coi_current_date_deaths / IFRs_Levin_scaled_up[1:20,current_coi]
+			current_total_ifr <- sum ( IFRs_Levin_scaled_up[1:20,current_coi] * current_infections / sum(current_infections) ) * 100
+			infections_array_excessDeaths_Levin_scaled[current_coi,as.character(current_date),,"up95"] <- current_infections
+			total_IFR_array_excessDeaths_Levin_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
+
+				}## if length excess deaths
+			} ## if excess deaths are available for current country
+		} ## for all_countries 
+	} ## if for current_date excess deaths are available 
+  } ## for date 
+  
+## 4.5 Calculate difference in total IFR that are based on infections using reported and excess mortality deaths:   
+
+total_IFR_difference_overlap_countries <- total_IFR_array_Verity_scaled[,,"central"]-total_IFR_array_excessDeaths_Verity_scaled[,,"central"]
+overlap_countries <- which(!is.na(total_IFR_difference_overlap_countries))
+
+no_of_diff_val <- sort(apply(X=total_IFR_difference_overlap_countries,1,FUN=function(x){length(x[which(!is.na(x))])}),decreasing=TRUE)
+no_of_diff_val_largerThan_0 <- no_of_diff_val[which(no_of_diff_val>0)]
+sum(no_of_diff_val_largerThan_0)
+ 
+## mean(total_IFR_difference_overlap_countries,na.rm=TRUE) 
+## quantile(total_IFR_difference_overlap_countries,probs=c(0.1,0.5,0.9),na.rm=TRUE) 
+
+## 4.6 Visualize this difference in total IFR:
+
+setwd("./plots")
+
+dev.off()
+
+pdf(file=paste("total-IFR-difference-reported-vs-excessDeaths.pdf",sep=""), width=15, height=15, family="Times", pointsize=24, onefile=TRUE)
+
+par(fig = c(0,1,0,1), las=1, mai=c(0.8,0.0,1.0,0.0))
+
+plot(x=-100,y=-100,ylim=c(1,26.5),xlim=c(-6.0,4.5),xlab="",ylab="",main="",axes=FALSE)
+title(bquote(atop("Difference in total IFR, in percentage points, estimating " ~ I[x],  "based on reported deaths (COVer-AGE-DB) and excess deaths (STMF)")),font.main=2)
+
+axis(side=1,at=seq(-4,4,1),labels=FALSE,lwd=1,pos=0)
+axis(side=1,at=seq(-4,4,1),labels=TRUE,lwd=3,pos=0)
+
+segments(x0=-4,x1=4,y0=seq(1,23,1),y1=seq(1,23,1),lty=2,col=grey(0.8),lwd=1)
+segments(x0=seq(-4,4,1),x1=seq(-4,4,1),y0=0,y1=23,lty=2,col=grey(0.8),lwd=1)
+segments(x0=0,x1=0,y0=0,y1=25.5,col="black",lwd=3)
+
+text(x=0, y=24.8, expression('total IFR['*'IFR'[x]*',I'[x]*'(reported deaths)] <'), col="black",pos=2,cex=0.9,font=2)	
+text(x=0, y=23.8, expression('total IFR['*'IFR'[x]*',I'[x]*'(excess deaths)]'), col="black",pos=2,cex=0.9,font=2)	
+
+text(x=0, y=24.8, expression('total IFR['*'IFR'[x]*',I'[x]*'(reported deaths)] >'), col="black",pos=4,cex=0.9,font=2)	
+text(x=0, y=23.8, expression('total IFR['*'IFR'[x]*',I'[x]*'(excess deaths)]'), col="black",pos=4,cex=0.9,font=2)	
+
+points(x=seq(-6.0,0.0,length=3),y=rep(27,3),pch=20,cex=1.8,col=pal[1:3])
+text(x=seq(-6.0,0.0,length=3),y=rep(27,3),c(names(pal)[1:3]),font=2,pos=4,cex=0.75)
+points(x=seq(-6.0,0.0,length=3),y=rep(26,3),pch=20,cex=1.8,col=pal[4:6])
+text(x=seq(-6.0,0.0,length=3),y=rep(26,3),c(names(pal)[4:6]),font=2,pos=4,cex=0.75)
+
+points(x=2.0,y=26.5,pch=15,cex=2.1,col="black")
+segments(x0=2.0,x1=2.0,y0=25.75,y1=27.25)
+
+text(x=2.0,y=25.75,c("Quantile 0.1"),font=2,pos=4,cex=0.8)
+text(x=2.0,y=27.25,c("Quantile 0.9"),font=2,pos=4,cex=0.8)
+text(x=2.0,y=26.5,c("Median"),font=2,pos=4,cex=0.8)
+
+points(x=3.5,y=26.5,pch=4,cex=1.4,,lwd=2,col="black")
+text(x=3.5,y=26.5,"2021-01-10",font=2,pos=4,cex=0.8)
+
+text(x=4.25,y=23.25,"No. of values:",cex=0.8,pos=3)
+
+current_yy <- 1
+
+for(coi in length(no_of_diff_val_largerThan_0):1){
+	current_coi <- names(no_of_diff_val_largerThan_0)[coi]
+	current_diff <- total_IFR_difference_overlap_countries[current_coi,]
+	current_diff_nonNA <- current_diff[which(!is.na(current_diff))]
+	
+	if(length(current_diff_nonNA)>0){
+
+		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
+		text(x=-4.5, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 
+			pos=2,cex=1.0,font=2)	
+		rect(xleft=median(current_diff_nonNA,na.rm=TRUE)-0.1,
+			xright=median(current_diff_nonNA,na.rm=TRUE)+0.1,
+			ybottom=current_yy-0.3,ytop=current_yy+0.3,col=adjustcolor(pal[current_pal],alpha.f=0.6),border=NA,lwd=3)
+		segments(x0=quantile(current_diff_nonNA,probs=(0.1),na.rm=TRUE),
+			x1=quantile(current_diff_nonNA,probs=(0.9),na.rm=TRUE),
+			y0=current_yy,y1=current_yy,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+
+		text(x=4,y=current_yy,length(current_diff_nonNA),cex=0.9,pos=4)
+
+		if(!is.na(current_diff_nonNA["2021-01-10"])){
+			points(x=current_diff_nonNA["2021-01-10"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+		} ## if
+
+		current_yy <- current_yy + 1
+		
+	} ## if
+} ## for coi
+
+dev.off()
+
+##
+##
 
 
 

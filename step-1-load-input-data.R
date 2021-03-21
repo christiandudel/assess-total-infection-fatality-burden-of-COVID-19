@@ -172,13 +172,13 @@ IFRs_Salje_original[,"low"] <-  IFRs[as.character(seq(2.5,97.5,5)),"SaljeLow"]
 IFRs_Salje_original[,"up"] <-  IFRs[as.character(seq(2.5,97.5,5)),"SaljeUp"]
 
 #
-## Population median age from UNWPP 2019:
+## 6. Population median age from UNWPP 2019:
 #
 
 median_age <- read.xlsx("WPP2019_POP_F05_MEDIAN_AGE.xlsx",sheet = 1,startRow = 17)
 
 #
-## Population count by age from UNWPP 2019:
+## 7. Population count by age from UNWPP 2019:
 #
 
 wom <- read.xlsx("WPP2019_INT_F03_3_POPULATION_BY_AGE_ANNUAL_FEMALE.xlsx",sheet = 1,startRow = 17)
@@ -226,9 +226,16 @@ for(country in 1:length(countries_by_world_region[,1])){
 }
 
 #
-## Remaining life expectancy UNWPP 2019:
+## 8. Remaining life expectancy UNWPP 2019:
 #
 
 lt_1950_2020 <- read.xlsx("WPP2019_MORT_F17_1_ABRIDGED_LIFE_TABLE_BOTH_SEXES.xlsx",sheet = 1,startRow = 17)
+
+#
+## 9. Excess deaths from STMF:
+#
+
+setwd("./input-data")
+excess_deaths <- readRDS("excess_array.rds")
 
 
