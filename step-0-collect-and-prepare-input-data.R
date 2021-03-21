@@ -55,9 +55,7 @@ lexp_age_specific <- function(lx,ax,mx){
 ## 1. Download and save data from COVer-AGE-DB
 #
 
-
 download_data <- TRUE
-
 if (download_data){	
 
   ## Online source	
@@ -67,11 +65,6 @@ if (download_data){
   if (!dir.exists(cdb_dir)){
     dir.create(cdb_dir)
   }
-  ## Create a folder *Data* 
-  # if (!"COVer-AGE-DB" %in% dir()){
-  #   dir.create("COVer-AGE-DB")
-  # }
-  
   # TR: always downloads the most recent version. Fine until we submit.
   # The file will be zipped. No need to unzip it in order to read it
   # in however.
@@ -79,17 +72,7 @@ if (download_data){
                  progress = TRUE, 
                  dest = cdb_dir, 
                  download_only = TRUE)
-  
-  ## Filename and where to save it on your computer
-  # filename <- 'COVer-AGE-DB/Output_5.zip'
-  # 
-  # ## Download the data
-  # GET(url, write_disk(filename, overwrite = TRUE))
-  # 
-  # ## Unzip the downloaded and saved zip file 
-  # unzip(filename)
-
-} ## if download_data
+} 
 
 
 #
@@ -122,9 +105,6 @@ for (i in 1:6){
                   destfile = this_local_file)
   }
 }
-
-
-#### Please go to UNWPP2019 website and download data files as described in "information-on-downloading-input-data.txt".
 
 #
 ## 3. Generate population-weighted ex for scaling reference IFR of Levin et al. 
@@ -189,8 +169,6 @@ lt_survivors <- read_excel(here::here("input-data","WPP2019_MORT_F17_1_ABRIDGED_
                ex = `Expectation of life e(x)`) %>% 
   dplyr::filter(Location %in% major_countries_Levin,
          Period == "2015-2020")
-
-
 
 ## 3.4 Collect UN abridged life tables (number of survivors, a_x, m_x) for those countries:
 
@@ -259,7 +237,6 @@ agg_lt <-
   group_by(Age) %>% 
   summarize(nMx = mean(nMx))
 
-
 # TR: alternatively, one could send in ndx as Deaths and nLx as exposures,
 # presumably arithmetic averaged. Result could be slightly different. This also differs
 # from results after taking means of nAx, lx, nMx 
@@ -284,8 +261,6 @@ pop_weights <-
   summarize(Population = sum(Population), .groups = "drop") %>% 
   mutate(Prop = Population / sum(Population))
   
- 
- 
 # pop_count_l <- matrix(NA,nr=length(seq(0,100,1)),nc=length(major_countries_Levin))
 # rownames(pop_count_l) <- seq(0,100,1)
 # colnames(pop_count_l) <- major_countries_Levin
@@ -306,10 +281,6 @@ pop_weights <-
 
 # lt_survivors_single_age_pop_weight <- 
 #   get_ungrouped_lx_100(current_lx_data = rowSums(t(apply(X = lt_survivors, 1, FUN = function(x){pop_weights * x})))) 
-
-# TR: this one looks tricker to guess, but will try.
-
-
 
 #### 3.7.2 Determine ax for single years of age using population weighted average of major countries for age 0:
 
