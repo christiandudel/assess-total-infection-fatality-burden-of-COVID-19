@@ -409,7 +409,7 @@ dev.off()
 #
 ## 7. Calculate effectiveness in protecting the elderly (here called performance):
 ## using total IFR(IFR_x,I_x) / total IFR (IFR_x,P_x)
-## and perhaps account for infection prevalence
+## and perhaps account for infection prevalence: times lambda
 #
 
 ## dimnames(infections_array_Verity_scaled)
@@ -504,8 +504,6 @@ text(x=-0.25,y=41,"More elderly to protect",font=2,pos=3,srt=90) ## Higher initi
 
 text(x=-0.65,y=51.75,"Median",font=2,cex=0.7,pos=4)
 text(x=-0.65,y=51,"population age",font=2,cex=0.7,pos=4)
-
-current_coi <- "Norway"
 
 for(coi in 1:length(all_countries)){
 	current_coi <- all_countries[coi]

@@ -3,7 +3,7 @@
 ## 1. Set working directory:
 #
 
-setwd(./input-data)
+setwd("./input-data")
 
 #
 ## 2. Load R packages:
@@ -17,7 +17,6 @@ require(openxlsx)
 #
 
 filename <- 'COVer-AGE-DB/Output_5.zip'
-
 Dat <- read_csv(filename,skip=3)
 
 #
@@ -26,7 +25,7 @@ Dat <- read_csv(filename,skip=3)
 
 all_countries <- unique(Dat$Country)
 
-setwd(./input-data)
+setwd("./input-data")
 source(countries_by_world_region.R)
 
 #
@@ -34,7 +33,7 @@ source(countries_by_world_region.R)
 #
 
 IFRs <- read.csv("IFRs.csv",row.names=1,check.names=FALSE,header=TRUE)
-
+IFRs_EA_by_sex <- read.csv("IFRs_EA_by_sex.csv")
 
 ## 5.1 IFRs_Verity_scaled:
 
@@ -170,6 +169,100 @@ rownames(IFRs_Salje_original) <- seq(0,95,5)
 IFRs_Salje_original[,"central"] <-  IFRs[as.character(seq(2.5,97.5,5)),"Salje"]
 IFRs_Salje_original[,"low"] <-  IFRs[as.character(seq(2.5,97.5,5)),"SaljeLow"]
 IFRs_Salje_original[,"up"] <-  IFRs[as.character(seq(2.5,97.5,5)),"SaljeUp"]
+
+## 5.7 IFRs_m_Acosta_scaled:
+#### for males
+
+IFRs_m_Acosta_scaled_central <- matrix(NA,nr=length(seq(0,95,5)),nc=length(all_countries))
+colnames(IFRs_m_Acosta_scaled_central) <- all_countries
+rownames(IFRs_m_Acosta_scaled_central) <- seq(0,95,5)
+
+for(country in 1:length(all_countries)){
+	current_coi <- all_countries[country]  
+	if(paste("Acosta_",current_coi,"_m",sep="") %in% colnames(IFRs_EA_by_sex)){
+		IFRs_m_Acosta_scaled_central[,current_coi] <- IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),paste("Acosta_",current_coi,"_m",sep="")]
+	}
+}
+
+IFRs_m_Acosta_scaled_up <- matrix(NA,nr=length(seq(0,95,5)),nc=length(all_countries))
+colnames(IFRs_m_Acosta_scaled_up) <- all_countries
+rownames(IFRs_m_Acosta_scaled_up) <- seq(0,95,5)
+
+for(country in 1:length(all_countries)){
+	current_coi <- all_countries[country]  
+	if(paste("Acosta_",current_coi,"_m",sep="") %in% colnames(IFRs_EA_by_sex)){
+		IFRs_m_Acosta_scaled_up[,current_coi] <- IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),paste("AcostaUp_",current_coi,"_m",sep="")]
+	}
+}
+
+IFRs_m_Acosta_scaled_low <- matrix(NA,nr=length(seq(0,95,5)),nc=length(all_countries))
+colnames(IFRs_m_Acosta_scaled_low) <- all_countries
+rownames(IFRs_m_Acosta_scaled_low) <- seq(0,95,5)
+
+for(country in 1:length(all_countries)){
+	current_coi <- all_countries[country]  
+	if(paste("Acosta_",current_coi,"_m",sep="") %in% colnames(IFRs_EA_by_sex)){
+		IFRs_m_Acosta_scaled_low[,current_coi] <- IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),paste("AcostaLow_",current_coi,"_m",sep="")]
+	}
+}
+
+## 5.8 IFRs_m_Acosta_original:
+#### for males
+
+IFRs_m_Acosta_original <- matrix(NA,nr=length(seq(0,95,5)),nc=3)
+colnames(IFRs_m_Acosta_original) <- c("central","low","up")
+rownames(IFRs_m_Acosta_original) <- seq(0,95,5)
+
+IFRs_m_Acosta_original[,"central"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"Acosta_m"]
+IFRs_m_Acosta_original[,"low"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"AcostaLow_m"]
+IFRs_m_Acosta_original[,"up"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"AcostaUp_m"]
+
+## 5.9 IFRs_f_Acosta_scaled:
+#### for females
+
+IFRs_f_Acosta_scaled_central <- matrix(NA,nr=length(seq(0,95,5)),nc=length(all_countries))
+colnames(IFRs_f_Acosta_scaled_central) <- all_countries
+rownames(IFRs_f_Acosta_scaled_central) <- seq(0,95,5)
+
+for(country in 1:length(all_countries)){
+	current_coi <- all_countries[country]  
+	if(paste("Acosta_",current_coi,"_f",sep="") %in% colnames(IFRs_EA_by_sex)){
+		IFRs_f_Acosta_scaled_central[,current_coi] <- IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),paste("Acosta_",current_coi,"_f",sep="")]
+	}
+}
+
+IFRs_f_Acosta_scaled_up <- matrix(NA,nr=length(seq(0,95,5)),nc=length(all_countries))
+colnames(IFRs_f_Acosta_scaled_up) <- all_countries
+rownames(IFRs_f_Acosta_scaled_up) <- seq(0,95,5)
+
+for(country in 1:length(all_countries)){
+	current_coi <- all_countries[country]  
+	if(paste("Acosta_",current_coi,"_f",sep="") %in% colnames(IFRs_EA_by_sex)){
+		IFRs_f_Acosta_scaled_up[,current_coi] <- IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),paste("AcostaUp_",current_coi,"_f",sep="")]
+	}
+}
+
+IFRs_f_Acosta_scaled_low <- matrix(NA,nr=length(seq(0,95,5)),nc=length(all_countries))
+colnames(IFRs_f_Acosta_scaled_low) <- all_countries
+rownames(IFRs_f_Acosta_scaled_low) <- seq(0,95,5)
+
+for(country in 1:length(all_countries)){
+	current_coi <- all_countries[country]  
+	if(paste("Acosta_",current_coi,"_f",sep="") %in% colnames(IFRs_EA_by_sex)){
+		IFRs_f_Acosta_scaled_low[,current_coi] <- IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),paste("AcostaLow_",current_coi,"_f",sep="")]
+	}
+}
+
+## 5.10 IFRs_f_Acosta_original:
+#### for females
+
+IFRs_f_Acosta_original <- matrix(NA,nr=length(seq(0,95,5)),nc=3)
+colnames(IFRs_f_Acosta_original) <- c("central","low","up")
+rownames(IFRs_f_Acosta_original) <- seq(0,95,5)
+
+IFRs_f_Acosta_original[,"central"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"Acosta_m"]
+IFRs_f_Acosta_original[,"low"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"AcostaLow_m"]
+IFRs_f_Acosta_original[,"up"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"AcostaUp_m"]
 
 #
 ## 6. Population median age from UNWPP 2019:
