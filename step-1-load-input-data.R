@@ -1,39 +1,45 @@
 
 #
-## 1. Set working directory:
-#
-
-setwd("./input-data")
-
-#
-## 2. Load R packages:
+## 1. Load R packages:
 #
 
 require(openxlsx)
-
-
+require(readr)
+require(here)
+require(lubridate)
+require(dplyr)
+require(covidAgeData)
+require(magrittr)
 #
-## 3. Load data from COVer-AGE-DB:
+## 2. Load national data from COVer-AGE-DB:
 #
 
-filename <- 'COVer-AGE-DB/Output_5.zip'
-Dat <- read_csv(filename,skip=3)
+filename      <- here::here("input-data","COVerAGE-DB","Output_5.zip")
+dat           <- read_subset_covid(
+                        filename, 
+                        data = "Output_5", 
+                        return = "tibble",
+                        Region = "All",
+                        Sex = "b") %>% 
+  mutate(Date = dmy(Date))
 
 #
 ## 4. Countries of interest:
 # 
 
-all_countries <- unique(Dat$Country)
+all_countries <- unique(dat$Country)
 
-setwd("./input-data")
-source(countries_by_world_region.R)
+source(here::here("input-data","countries_by_world_region.R"))
 
 #
 ## 5. Load reference and scaled IFRs by age for all countries of interest:
 #
 
-IFRs <- read.csv("IFRs.csv",row.names=1,check.names=FALSE,header=TRUE)
-IFRs_EA_by_sex <- read.csv("IFRs_EA_by_sex.csv")
+IFRs <- read.csv(here::here("input-data","IFRs.csv"),
+                 row.names = 1,
+                 check.names = FALSE,
+                 header = TRUE)
+IFRs_EA_by_sex <- read.csv(here::here("input-data","IFRs_EA_by_sex.csv"))
 
 ## 5.1 IFRs_Verity_scaled:
 
@@ -268,19 +274,19 @@ IFRs_f_Acosta_original[,"up"] <-  IFRs_EA_by_sex[as.character(seq(2.5,97.5,5)),"
 ## 6. Population median age from UNWPP 2019:
 #
 
-median_age <- read.xlsx("WPP2019_POP_F05_MEDIAN_AGE.xlsx",sheet = 1,startRow = 17)
+median_age <- read.xlsx(here::here("input-data","WPP2019_POP_F05_MEDIAN_AGE.xlsx"),sheet = 1,startRow = 17)
 
 #
 ## 7. Population count by age from UNWPP 2019:
 #
 
-wom <- read.xlsx("WPP2019_INT_F03_3_POPULATION_BY_AGE_ANNUAL_FEMALE.xlsx",sheet = 1,startRow = 17)
+wom <- read.xlsx(here::here("input-data","WPP2019_INT_F03_3_POPULATION_BY_AGE_ANNUAL_FEMALE.xlsx"),sheet = 1,startRow = 17)
 wom_select <- wom[which(wom[,"Reference.date.(as.of.1.July)"]=="2019"),c(3,8:109)] 
 ## wom_select[1:2,]
 
 ##
 
-men <- read.xlsx("WPP2019_INT_F03_2_POPULATION_BY_AGE_ANNUAL_MALE.xlsx",sheet = 1,startRow = 17)
+men <- read.xlsx(here::here("input-data","WPP2019_INT_F03_2_POPULATION_BY_AGE_ANNUAL_MALE.xlsx"),sheet = 1,startRow = 17)
 men_select <- men[which(men[,"Reference.date.(as.of.1.July)"]=="2019"),c(3,8:109)] ## men[,c(3,8:109)]
 ## men_select[1:2,]
 
@@ -322,13 +328,12 @@ for(country in 1:length(countries_by_world_region[,1])){
 ## 8. Remaining life expectancy UNWPP 2019:
 #
 
-lt_1950_2020 <- read.xlsx("WPP2019_MORT_F17_1_ABRIDGED_LIFE_TABLE_BOTH_SEXES.xlsx",sheet = 1,startRow = 17)
+lt_1950_2020 <- read.xlsx(here::here("input-data","WPP2019_MORT_F17_1_ABRIDGED_LIFE_TABLE_BOTH_SEXES.xlsx"),sheet = 1,startRow = 17)
 
 #
 ## 9. Excess deaths from STMF:
 #
 
-setwd("./input-data")
-excess_deaths <- readRDS("excess_array.rds")
+excess_deaths <- readRDS(here::here("input-data","excess_array.rds"))
 
 
