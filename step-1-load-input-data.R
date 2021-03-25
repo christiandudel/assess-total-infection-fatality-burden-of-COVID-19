@@ -334,6 +334,14 @@ lt_1950_2020 <- read.xlsx(here::here("input-data","WPP2019_MORT_F17_1_ABRIDGED_L
 ## 9. Excess deaths from STMF:
 #
 
-excess_deaths <- readRDS(here::here("input-data","excess_array.rds"))
-
+excess_deaths_hmd <-
+  read_csv(here::here("input-data","cumulative_excess_age_2020_2021_hmd.csv"))  
+  
+excess_deaths_pemx <- 
+  read_csv(here::here("input-data","cumulative_excess_age_2020_2021_pemx.csv"))  
+  
+excess_deaths <- 
+  bind_rows(excess_deaths_hmd,
+            excess_deaths_pemx) %>% 
+  reshape2::acast(Country~Date~Sex~Age, value.var = "Excess")
 
