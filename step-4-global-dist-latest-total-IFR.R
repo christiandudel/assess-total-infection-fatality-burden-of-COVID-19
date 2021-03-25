@@ -5,7 +5,6 @@
 
 setwd(.)
 
-
 #
 ## 2. Zoom into the spatio-temporal distribution,
 #### and compare the total IFR at the latest COMMON date 
@@ -544,6 +543,9 @@ sum(no_of_diff_val_largerThan_0)
 ## mean(total_IFR_difference_overlap_countries,na.rm=TRUE) 
 ## quantile(total_IFR_difference_overlap_countries,probs=c(0.1,0.5,0.9),na.rm=TRUE) 
 
+total_IFR_difference_overlap_countries_sort_by_median <- rev(sort(apply(X=total_IFR_difference_overlap_countries,1,function(x){median(x,na.rm=TRUE)})))
+## total_IFR_difference_overlap_countries_sort_by_median
+
 ## 4.6 Visualize this difference in total IFR:
 
 setwd("./plots")
@@ -589,12 +591,12 @@ text(x=4.25,y=23.25,"No. of values:",cex=0.8,pos=3)
 
 current_yy <- 1
 
-for(coi in length(no_of_diff_val_largerThan_0):1){
-	current_coi <- names(no_of_diff_val_largerThan_0)[coi]
+for(coi in length(total_IFR_difference_overlap_countries_sort_by_median):1){
+	current_coi <- names(total_IFR_difference_overlap_countries_sort_by_median)[coi]
 	current_diff <- total_IFR_difference_overlap_countries[current_coi,]
 	current_diff_nonNA <- current_diff[which(!is.na(current_diff))]
 	
-	if(length(current_diff_nonNA)>0){
+	if(length(current_diff_nonNA)>0 & max(deaths_array[current_coi,,],na.rm=TRUE)>=200){
 
 		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
 		text(x=-4.5, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 
