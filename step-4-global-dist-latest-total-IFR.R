@@ -15,8 +15,11 @@ setwd(.)
 
 ## 2.1: Collect countries of interest with total IFR estimate as of 13 Jan 2021 and their population median age:
 
-latest_common_date <- names(dates_and_number_of_values_lt_24)[length(dates_and_number_of_values_lt_24)]
+## latest_common_date <- names(dates_and_number_of_values_lt_24)[length(dates_and_number_of_values_lt_24)]
+latest_common_date <- "2021-01-13"
 countries_of_interest <- total_IFR_array_Verity_scaled[,as.character(latest_common_date),"central"]
+current_deaths <- apply(X=deaths_array[,latest_common_date,],1,function(x){sum(x)})
+countries_of_interest <- countries_of_interest[which(current_deaths>=200)] 
 countries_of_interest <- names(countries_of_interest[which(!is.na(countries_of_interest ))]) 
 countries_of_interest 
 
@@ -49,7 +52,7 @@ for(country in 1:length(countries_of_interest)){
 	coi_ifr_median_age[current_coi,2] <- current_median_age
 } ## for country
 
-coi_ifr_median_age <- coi_ifr_median_age[order(coi_ifr_median_age[,1]),]
+coi_ifr_median_age <- coi_ifr_median_age[order(coi_ifr_median_age[,2]),]
 
 ## 2.2: Finally plot global distribution of latest total IFR, in %
 
@@ -101,22 +104,15 @@ text(x=log(0.016),y=48.3,c(names(pal)[6]),font=2,pos=4,cex=0.6)
 selected_coi_for_vis_by_mean_age <- c("Portugal","South Korea",
 					"France","Sweden","Australia",
 						"Chile","Colombia","Mexico",
-						"Philippines","Togo","Slovenia")
+						"Philippines","Jordan","Slovenia")
 
-selected_coi_for_vis_by_ifr <- c("Slovenia","Portugal","Spain","South Korea",
-					"France","Sweden","Australia",
-						"Chile","Colombia","Mexico",
-						"Philippines","Togo")
-
-
-for(country in 1:dim(coi_median_age)[1]){
+for(country in 1:dim(coi_ifr_median_age)[1]){
 
 	current_coi <- countries_of_interest[country] 
 
 	if(current_coi %in% selected_coi_for_vis_by_mean_age){
 
 		current_median_age <- coi_ifr_median_age[current_coi,2]
-
 		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
 	
 		segments(x0=log(0.05),x1=log(10),y0=current_median_age,y1=current_median_age,col=gray(0.6),lwd=1,lty=2)
@@ -131,18 +127,12 @@ for(country in 1:dim(coi_median_age)[1]){
 			current_total_IFR_low <- eval(parse(text=(paste("total_IFR_array_",inputIFRx,"_scaled[current_coi,as.character(latest_common_date),1]",sep=""))))
 			current_total_IFR_up <- eval(parse(text=(paste("total_IFR_array_",inputIFRx,"_scaled[current_coi,as.character(latest_common_date),3]",sep=""))))
 
-			if(infections){
-				points(x=log(current_total_IFR_central),y=current_median_age,pch=current_pch,col=adjustcolor(pal[current_pal],alpha.f=0.6),cex=2.5)
-			}
-			if(infections_PI){	
-				points(x=log(current_total_IFR_low),y=current_median_age,pch=current_pch,col=adjustcolor(pal[current_pal],alpha.f=0.6),cex=0.7)
-				points(x=log(current_total_IFR_up),y=current_median_age,pch=current_pch,col=adjustcolor(pal[current_pal],alpha.f=0.6),cex=0.7)
-			}
+			points(x=log(current_total_IFR_central),y=current_median_age,pch=current_pch,col=adjustcolor(pal[current_pal],alpha.f=0.6),cex=2.5)
+			points(x=log(current_total_IFR_low),y=current_median_age,pch=current_pch,col=adjustcolor(pal[current_pal],alpha.f=0.6),cex=0.7)
+			points(x=log(current_total_IFR_up),y=current_median_age,pch=current_pch,col=adjustcolor(pal[current_pal],alpha.f=0.6),cex=0.7)
 
 		} ## for sourceIFR
-
 	} ## if current_coi
-
 } ## for country
  
 dev.off()
@@ -165,7 +155,7 @@ par(fig = c(0,1,0,1), las=1, mai=c(0.6,3.2,1.0,0.4))
 
 	selected_coi_for_vis_by_mean_age <- c("Portugal","Slovenia","South Korea",
 					"France","Sweden","Australia","Chile",
-					"Colombia","Mexico","Philippines","Togo")
+					"Colombia","Mexico","Philippines","Jordan")
 
 	points(x=seq(-4.8,3.2,length=6),y=rep(53.2,6),pch=20,cex=1.8,col=pal[1:6])
 	text(x=seq(-4.8,3.2,length=6),y=rep(53.2,6),c(names(pal)[1:6]),font=2,pos=4,cex=0.65)
@@ -198,7 +188,7 @@ par(fig = c(0,0.35,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 
 	text(x=0,y=48,"Verity et al.",pos=3,font=2)
 
-	for(country in 1:dim(coi_median_age)[1]){
+	for(country in 1:dim(coi_ifr_median_age)[1]){
 
 		current_coi <- countries_of_interest[country] 
 
@@ -269,7 +259,7 @@ par(fig = c(0.32,0.67,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 
 	text(x=0,y=48,"Levin et al.",pos=3,font=2)
 
-	for(country in 1:dim(coi_median_age)[1]){
+	for(country in 1:dim(coi_ifr_median_age)[1]){
 
 		current_coi <- countries_of_interest[country] 
 
@@ -342,7 +332,7 @@ par(fig = c(0.64,0.99,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 
 	text(x=0,y=48,"Salje et al.",pos=3,font=2)
 
-	for(country in 1:dim(coi_median_age)[1]){
+	for(country in 1:dim(coi_ifr_median_age)[1]){
 
 		current_coi <- countries_of_interest[country] 
 
