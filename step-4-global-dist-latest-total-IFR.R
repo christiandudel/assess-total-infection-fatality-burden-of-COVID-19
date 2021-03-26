@@ -596,7 +596,7 @@ for(coi in length(total_IFR_difference_overlap_countries_sort_by_median):1){
 	current_diff <- total_IFR_difference_overlap_countries[current_coi,]
 	current_diff_nonNA <- current_diff[which(!is.na(current_diff))]
 	
-	if(length(current_diff_nonNA)>0 & max(deaths_array[current_coi,,],na.rm=TRUE)>=200){
+	if(length(current_diff_nonNA)>0 & max(apply(X=deaths_array[current_coi,,],1,sum),na.rm=TRUE)>=200){
 
 		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
 		text(x=-4.5, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 

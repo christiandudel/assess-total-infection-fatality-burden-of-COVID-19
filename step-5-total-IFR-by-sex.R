@@ -200,7 +200,8 @@ sum(no_of_diff_by_sex_val_largerThan_0)
 ##
 
 no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199 <- NA
-current_coi <- "Mexico"
+median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199 <- NA
+
 for(coi in length(no_of_diff_by_sex_val_largerThan_0):1){
 	current_coi <- names(no_of_diff_by_sex_val_largerThan_0)[coi]
 	current_diff <- total_IFR_difference_by_sex_overlap_countries[current_coi,]
@@ -219,10 +220,18 @@ for(coi in length(no_of_diff_by_sex_val_largerThan_0):1){
 		current_to_add <- length(current_diff_nonNA)
 		names(current_to_add) <- current_coi
 		no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199 <- c(no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199,current_to_add)
+
+		current_median <- median(current_diff_nonNA)
+		names(current_median) <- current_coi
+		median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199 <- c(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199,current_median)
 	}
+
 } ## coi
 
 no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199 <- no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199[-1]
+median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199 <- median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199[-1]
+
+## sort(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199)
 
 ##
 ##
@@ -261,37 +270,46 @@ points(x=2.9,y=42,pch=4,cex=1.4,,lwd=2,col="black")
 text(x=2.9,y=42,"2021-01-13",font=2,pos=4,cex=0.8)
 text(x=3.25,y=38,"No. of values:",cex=0.8,pos=3)
 current_yy <- 1
-for(coi in length(no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199):1){
-	current_coi <- names(rev(sort(no_of_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199)))[coi]
-	current_diff <- total_IFR_difference_by_sex_overlap_countries[current_coi,]
-	current_diff_nonNA <- current_diff[which(!is.na(current_diff))]
-	current_dates <- names(current_diff_nonNA)
-	if(length(current_dates)>1){
-		current_dates_deaths_f <- apply(deaths_f_array[current_coi,current_dates,],1,sum)
-	}
-	if(length(current_dates)==1){
-		current_dates_deaths_f <- sum(deaths_f_array[current_coi,current_dates,])
-	}
-	current_dates_deaths_f_lt_200 <- names(current_dates_deaths_f[which(current_dates_deaths_f>=200)]) 
-	current_diff_nonNA <- current_diff_nonNA[which(names(current_diff_nonNA)%in%current_dates_deaths_f_lt_200)]  
-	if(length(current_diff_nonNA)>0){
-		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
-		text(x=-2.0, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 
-			pos=2,cex=1.0,font=2)	
-		rect(xleft=median(current_diff_nonNA,na.rm=TRUE)-0.05,
-			xright=median(current_diff_nonNA,na.rm=TRUE)+0.05,
-			ybottom=current_yy-0.3,ytop=current_yy+0.3,col=adjustcolor(pal[current_pal],alpha.f=0.6),border=NA,lwd=3)
-		segments(x0=quantile(current_diff_nonNA,probs=(0.1),na.rm=TRUE),
-			x1=quantile(current_diff_nonNA,probs=(0.9),na.rm=TRUE),
-			y0=current_yy,y1=current_yy,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
-		text(x=3.25,y=current_yy,length(current_diff_nonNA),cex=0.9,pos=4)
-		if(!is.na(current_diff_nonNA["2021-01-10"])){
-			points(x=current_diff_nonNA["2021-01-13"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+for(coi in length(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199):1){
+	current_coi <- names(rev(sort(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199)))[coi]
+	if(max(apply(X=deaths_f_array[current_coi,,],1,sum),na.rm=TRUE)>=200 & max(apply(X=deaths_m_array[current_coi,,],1,sum),na.rm=TRUE)>=200){
+		current_diff <- total_IFR_difference_by_sex_overlap_countries[current_coi,]
+		current_diff_nonNA <- current_diff[which(!is.na(current_diff))]
+	
+		current_dates <- names(current_diff_nonNA)
+		if(length(current_dates)>1){
+			current_dates_deaths_f <- apply(deaths_f_array[current_coi,current_dates,],1,sum)
 		}
-		current_yy <- current_yy + 1
-		collect_median_diff_by_sex[coi] <- median(current_diff_nonNA,na.rm=TRUE)
-		collect_median_diff_by_sex_coi[coi] <- current_coi
-		collect_median_diff_by_sex_noVal[coi] <- length(current_diff_nonNA)
+		if(length(current_dates)==1){
+			current_dates_deaths_f <- sum(deaths_f_array[current_coi,current_dates,])
+		}
+		current_dates_deaths_f_lt_200 <- names(current_dates_deaths_f[which(current_dates_deaths_f>=200)]) 
+		current_diff_nonNA <- current_diff_nonNA[which(names(current_diff_nonNA)%in%current_dates_deaths_f_lt_200)]  
+	
+		if(length(current_diff_nonNA)>0){
+
+			current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
+			text(x=-2.0, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 
+				pos=2,cex=1.0,font=2)	
+			rect(xleft=median(current_diff_nonNA,na.rm=TRUE)-0.05,
+				xright=median(current_diff_nonNA,na.rm=TRUE)+0.05,
+				ybottom=current_yy-0.3,ytop=current_yy+0.3,col=adjustcolor(pal[current_pal],alpha.f=0.6),border=NA,lwd=3)
+			segments(x0=quantile(current_diff_nonNA,probs=(0.1),na.rm=TRUE),
+				x1=quantile(current_diff_nonNA,probs=(0.9),na.rm=TRUE),
+				y0=current_yy,y1=current_yy,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+
+			text(x=3.25,y=current_yy,length(current_diff_nonNA),cex=0.9,pos=4)
+
+			if(!is.na(current_diff_nonNA["2021-01-10"])){
+				points(x=current_diff_nonNA["2021-01-13"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+			}
+
+			current_yy <- current_yy + 1
+
+			collect_median_diff_by_sex[coi] <- median(current_diff_nonNA,na.rm=TRUE)
+			collect_median_diff_by_sex_coi[coi] <- current_coi
+			collect_median_diff_by_sex_noVal[coi] <- length(current_diff_nonNA)
+		} ## if
 	} ## if
 } ## for coi
 
