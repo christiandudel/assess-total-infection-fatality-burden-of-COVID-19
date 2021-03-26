@@ -40,7 +40,7 @@ setwd(.)
 		if(current_coi %in% unique(dat_deaths$Country)){
 			current_coi_deaths <- (dat_deaths[which(dat_deaths$Country==current_coi),])
 			current_coi_current_date_deaths <- pull(current_coi_deaths[which(current_coi_deaths$Date==current_date),"Deaths"])
-			if(length(which(is.na(current_coi_recent_deaths)))==0 & sum(current_coi_current_date_deaths,na.rm=TRUE)>0){
+			if(length(which(is.na(current_coi_current_date_deaths)))==0 & sum(current_coi_current_date_deaths,na.rm=TRUE)>0){
 				deaths_available[current_coi,as.character(current_date)] <- 1
 			} ## if 
 		} ## if current_coi
@@ -225,6 +225,9 @@ for(date in 1:length(dates_and_number_of_values_lt_24)){
 
 	current_x <- which(calendar_dates==names(dates_and_number_of_values_lt_24[date]))
 	current_y <- total_IFR_array_Verity_scaled[,names(dates_and_number_of_values_lt_24)[date],"central"]
+	current_coi_no_deaths <- apply(X=deaths_array[,names(dates_and_number_of_values_lt_24)[date],],1,function(x){sum(x)})
+	current_coi_with_min_200_deaths <- which(current_coi_no_deaths>=200) 
+	current_y <- current_y[current_coi_with_min_200_deaths]  
 
 	## single countries:
 	current_coi <- names(current_y[which(!is.na(current_y))])
@@ -239,11 +242,6 @@ for(date in 1:length(dates_and_number_of_values_lt_24)){
 
 	## mean:
 	points(x=current_x,y=mean(current_y[which(!is.na(current_y))]),pch=20,col=gray(0.6),cex=1.25,lwd=2)
-
-	global_mean[date] <- mean(current_y[which(!is.na(current_y))])
-	global_median[date] <- median(current_y[which(!is.na(current_y))])
-	quantile_01[date] <- quantile(current_y[which(!is.na(current_y))],prob=c(0.1))
-	quantile_09[date] <- quantile(current_y[which(!is.na(current_y))],prob=c(0.9))
 }
 
 text(x=285,y=total_IFR_array_Verity_scaled["South Korea","2021-01-13","central"],"South Korea",col=pal[1],font=2,cex=0.8,pos=4)  
@@ -278,6 +276,10 @@ text(x=140,y=total_IFR_array_Verity_scaled["Japan","2020-08-14","central"],"Japa
 	calendar_dates[current_xx]
 	current_yy <- total_IFR_array_Verity_scaled[,as.character(actual_dates_to_plot[date]),"central"]
 
+	current_coi_no_deaths <- apply(X=deaths_array[,as.character(actual_dates_to_plot[date]),],1,function(x){sum(x)})
+	current_coi_with_min_200_deaths <- which(current_coi_no_deaths>=200) 
+	current_yy <- current_yy[current_coi_with_min_200_deaths]  
+
 	## median:
 	points(x=current_xx,y=median(current_yy[which(!is.na(current_yy))]),pch=15,col="black",cex=1.25,lwd=2)
 
@@ -291,17 +293,14 @@ text(x=140,y=total_IFR_array_Verity_scaled["Japan","2020-08-14","central"],"Japa
 
   text(x=140,y=-1,"Number of countries:",pos=3)
 
-  for(date in 1:length(dates_and_number_of_values_lt_24)){
-
-	current_x <- which(calendar_dates==names(dates_and_number_of_values_lt_24[date]))
-	current_y <- total_IFR_array_Verity_scaled[,names(dates_and_number_of_values_lt_24)[date],"central"]
-  }
-
   for(date in 1:length(actual_dates_to_plot)){
 
 	current_xx <- which(calendar_dates==actual_dates_to_plot[date])
 	calendar_dates[current_xx]
 	current_yy <- total_IFR_array_Verity_scaled[,as.character(actual_dates_to_plot[date]),"central"]
+	current_coi_no_deaths <- apply(X=deaths_array[,as.character(actual_dates_to_plot[date]),],1,function(x){sum(x)})
+	current_coi_with_min_200_deaths <- which(current_coi_no_deaths>=200) 
+	current_yy <- current_yy[current_coi_with_min_200_deaths]  
 	current_coi <- names(current_yy[which(!is.na(current_yy))])
 	current_row <- c(NA)
 	current_pal <- c(NA)

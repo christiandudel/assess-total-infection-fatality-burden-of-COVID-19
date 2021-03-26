@@ -36,7 +36,7 @@
 		if(current_coi %in% unique(dat_f_deaths$Country)){
 			current_coi_deaths <- (dat_f_deaths[which(dat_f_deaths$Country==current_coi),])
 			current_coi_current_date_deaths <- pull(current_coi_deaths[which(current_coi_deaths$Date==current_date),"Deaths"])
-			if(length(which(is.na(current_coi_recent_deaths)))==0 & sum(current_coi_current_date_deaths,na.rm=TRUE)>0){
+			if(length(which(is.na(current_coi_current_date_deaths)))==0 & sum(current_coi_current_date_deaths,na.rm=TRUE)>0){
 				deaths_f_available[current_coi,as.character(current_date)] <- 1
 			} ## if 
 		} ## if current_coi
@@ -54,7 +54,7 @@
 		if(current_coi %in% unique(dat_m_deaths$Country)){
 			current_coi_deaths <- (dat_m_deaths[which(dat_m_deaths$Country==current_coi),])
 			current_coi_current_date_deaths <- pull(current_coi_deaths[which(current_coi_deaths$Date==current_date),"Deaths"])
-			if(length(which(is.na(current_coi_recent_deaths)))==0 & sum(current_coi_current_date_deaths,na.rm=TRUE)>0){
+			if(length(which(is.na(current_coi_current_date_deaths)))==0 & sum(current_coi_current_date_deaths,na.rm=TRUE)>0){
 				deaths_m_available[current_coi,as.character(current_date)] <- 1
 			} ## if 
 		} ## if current_coi
