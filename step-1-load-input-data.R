@@ -327,6 +327,22 @@ for(country in 1:length(countries_by_world_region[,1])){
 	pop_count[,country] <- current_pop_count
 }
 
+##
+##
+
+pop_count_5y <- apply(X=pop_count,2,FUN=function(x){
+						start_age <- seq(1,96,5)
+						stop_age <- seq(5,100,5)
+						output <- NA
+						for(age_group in 1:length(start_age)){
+							output[age_group] <- sum(x[start_age[age_group]:stop_age[age_group]])
+						}
+						return(output*1000)
+						})	
+rownames(pop_count_5y) <- seq(0,95,5)
+pop_count_5y						
+
+
 #
 ## 8. Remaining life expectancy UNWPP 2019:
 #

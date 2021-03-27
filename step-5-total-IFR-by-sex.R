@@ -131,7 +131,7 @@ for(sex in 1:2){
 
 					## up95 IFR_x^COI:
 					current_infections <- current_coi_current_date_deaths[-length(current_coi_current_date_deaths)] / IFRs_f_Acosta_scaled_up[,current_coi]
-					current_total_ifr <- sum ( IFRs_Acosta_f_scaled_up[,current_coi] * current_infections / sum(current_infections) ) * 100
+					current_total_ifr <- sum ( IFRs_f_Acosta_scaled_up[,current_coi] * current_infections / sum(current_infections) ) * 100
 					infections_f_array_Acosta_scaled[current_coi,as.character(current_date),,"up95"] <- current_infections
 					total_IFR_f_array_Acosta_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
 
@@ -170,7 +170,7 @@ for(sex in 1:2){
 
 					## up95 IFR_x^COI:
 					current_infections <- current_coi_current_date_deaths[-length(current_coi_current_date_deaths)] / IFRs_m_Acosta_scaled_up[,current_coi]
-					current_total_ifr <- sum ( IFRs_Acosta_m_scaled_up[,current_coi] * current_infections / sum(current_infections) ) * 100
+					current_total_ifr <- sum ( IFRs_m_Acosta_scaled_up[,current_coi] * current_infections / sum(current_infections) ) * 100
 					infections_m_array_Acosta_scaled[current_coi,as.character(current_date),,"up95"] <- current_infections
 					total_IFR_m_array_Acosta_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
 
@@ -248,27 +248,28 @@ pdf(file=paste("total-IFR-difference-by-sex.pdf",sep=""), width=15, height=15, f
 
 par(fig = c(0,1,0,1), las=1, mai=c(0.8,0.0,1.0,0.0))
 
-plot(x=-100,y=-100,ylim=c(1,42),xlim=c(-3.0,3.5),xlab="",ylab="",main="",axes=FALSE)
+plot(x=-100,y=-100,ylim=c(1,46),xlim=c(-3.0,3.5),xlab="",ylab="",main="",axes=FALSE)
 title(bquote(atop("Difference in total IFR by sex, in percentage points")),font.main=2)
 axis(side=1,at=seq(-2,3,1),labels=FALSE,lwd=1,pos=0)
 axis(side=1,at=seq(-2,3,1),labels=TRUE,lwd=3,pos=0)
-segments(x0=-2,x1=3,y0=seq(1,37,1),y1=seq(1,37,1),lty=2,col=grey(0.8),lwd=1)
-segments(x0=seq(-2,3,0.5),x1=seq(-2,3,0.5),y0=0,y1=37,lty=2,col=grey(0.8),lwd=1)
-segments(x0=0,x1=0,y0=0,y1=39,col="black",lwd=3)
-text(x=0, y=38.5, expression('female total IFR < male total IFR'), col="black",pos=2,cex=0.9,font=2)	
-text(x=0, y=38.5, expression('female total IFR > male total IFR'), col="black",pos=4,cex=0.9,font=2)	
-points(x=seq(-3.0,0.8,length=3),y=rep(43,3),pch=20,cex=1.8,col=pal[1:3])
-text(x=seq(-3.0,0.8,length=3),y=rep(43,3),c(names(pal)[1:3]),font=2,pos=4,cex=0.75)
-points(x=seq(-3.0,0.8,length=3),y=rep(41,3),pch=20,cex=1.8,col=pal[4:6])
-text(x=seq(-3.0,0.8,length=3),y=rep(41,3),c(names(pal)[4:6]),font=2,pos=4,cex=0.75)
-points(x=2.0,y=42,pch=15,cex=2.1,col="black")
-segments(x0=2.0,x1=2.0,y0=40.75,y1=43.25)
-text(x=2.0,y=40.75,c("Quantile 0.1"),font=2,pos=4,cex=0.8)
-text(x=2.0,y=43.25,c("Quantile 0.9"),font=2,pos=4,cex=0.8)
-text(x=2.0,y=42,c("Median"),font=2,pos=4,cex=0.8)
-points(x=2.9,y=42,pch=4,cex=1.4,,lwd=2,col="black")
-text(x=2.9,y=42,"2021-01-13",font=2,pos=4,cex=0.8)
-text(x=3.25,y=38,"No. of values:",cex=0.8,pos=3)
+yy <- 4
+segments(x0=-2,x1=3,y0=seq(1,37+yy,1),y1=seq(1,37+yy,1),lty=2,col=grey(0.8),lwd=1)
+segments(x0=seq(-2,3,0.5),x1=seq(-2,3,0.5),y0=0,y1=37+yy,lty=2,col=grey(0.8),lwd=1)
+segments(x0=0,x1=0,y0=0,y1=39+yy,col="black",lwd=3)
+text(x=0, y=38.5+yy, expression('female IFR < male IFR'), col="black",pos=2,cex=0.9,font=2)	
+text(x=0, y=38.5+yy, expression('female IFR > male IFR'), col="black",pos=4,cex=0.9,font=2)	
+points(x=seq(-3.0,0.8,length=3),y=rep(43+yy,3),pch=20,cex=1.8,col=pal[1:3])
+text(x=seq(-3.0,0.8,length=3),y=rep(43+yy,3),c(names(pal)[1:3]),font=2,pos=4,cex=0.75)
+points(x=seq(-3.0,0.8,length=3),y=rep(41+yy,3),pch=20,cex=1.8,col=pal[4:6])
+text(x=seq(-3.0,0.8,length=3),y=rep(41+yy,3),c(names(pal)[4:6]),font=2,pos=4,cex=0.75)
+points(x=2.0,y=42+yy,pch=15,cex=2.1,col="black")
+segments(x0=2.0,x1=2.0,y0=40.75+yy,y1=43.25+yy)
+text(x=2.0,y=40.75+yy,c("Quantile 0.1"),font=2,pos=4,cex=0.8)
+text(x=2.0,y=43.25+yy,c("Quantile 0.9"),font=2,pos=4,cex=0.8)
+text(x=2.0,y=42+yy,c("Median"),font=2,pos=4,cex=0.8)
+points(x=2.9,y=42+yy,pch=4,cex=1.4,,lwd=2,col="black")
+text(x=2.9,y=42+yy,"2021-01-13",font=2,pos=4,cex=0.8)
+text(x=3.25,y=38+yy,"No. of values:",cex=0.8,pos=3)
 current_yy <- 1
 for(coi in length(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199):1){
 	current_coi <- names(rev(sort(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199)))[coi]
