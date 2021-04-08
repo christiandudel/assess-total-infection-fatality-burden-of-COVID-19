@@ -10,6 +10,7 @@ require(lubridate)
 require(dplyr)
 require(covidAgeData)
 require(magrittr)
+
 #
 ## 2. Load national data from COVer-AGE-DB:
 #
@@ -39,7 +40,9 @@ IFRs <- read.csv(here::here("input-data","IFRs.csv"),
                  row.names = 1,
                  check.names = FALSE,
                  header = TRUE)
+
 IFRs_EA_by_sex <- read.csv(here::here("input-data","IFRs_EA_by_sex.csv"))
+rownames(IFRs_EA_by_sex) <- seq(0,99,0.5)
 
 ## 5.1 IFRs_Verity_scaled:
 
@@ -324,6 +327,22 @@ for(country in 1:length(countries_by_world_region[,1])){
 	pop_count[,country] <- current_pop_count
 }
 
+##
+##
+
+pop_count_5y <- apply(X=pop_count,2,FUN=function(x){
+						start_age <- seq(1,96,5)
+						stop_age <- seq(5,100,5)
+						output <- NA
+						for(age_group in 1:length(start_age)){
+							output[age_group] <- sum(x[start_age[age_group]:stop_age[age_group]])
+						}
+						return(output*1000)
+						})	
+rownames(pop_count_5y) <- seq(0,95,5)
+pop_count_5y						
+
+
 #
 ## 8. Remaining life expectancy UNWPP 2019:
 #
@@ -333,6 +352,7 @@ lt_1950_2020 <- read.xlsx(here::here("input-data","WPP2019_MORT_F17_1_ABRIDGED_L
 #
 ## 9. Excess deaths from STMF:
 #
+
 excess_deaths_hmd <-
   read_csv(here::here("input-data","cumulative_excess_age_2020_2021_hmd.csv"),
            col_types = cols(.default = "c")) 
@@ -356,3 +376,4 @@ excess_deaths_both <-
 excess_deaths <- excess_deaths_both %>% 
   reshape2::acast(Country~Date~Sex~Age, value.var = "Excess")
 
+## saveRDS(excess_deaths, "excess_deaths.rds")
