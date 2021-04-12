@@ -34,9 +34,6 @@ dat <-  read_csv("input-data/COVerAGE-DB/Output_5.zip",
 
 
 
-dat <- db_cov
-
-
 # filename <- 
 #   here::here("input-data","COVerAGE-DB","Output_5.zip")
 # 
