@@ -2,5 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-assess-total-infection-fatality-burden-of-COVID-19.Rproj
-recallrepanelfigures.zip
+input-data/Output_5.zip
+input-data/Output_5.csv
+input-data/UNe0_f.xlsx
+input-data/UNe0_m.xlsx
