@@ -180,7 +180,7 @@ setwd(.)
 
 total_IFR_array_Verity_scaled_available <- apply(X=total_IFR_array_Verity_scaled[,,"central"],2,function(X){length(X[-which(is.na(X))])})
 dates_and_number_of_values_lt_24 <- total_IFR_array_Verity_scaled_available[which(total_IFR_array_Verity_scaled_available > 24)] 
-calendar_dates <- seq(as.Date("03/04/2020", format = "%d/%m/%Y"), by = "days", length = 287+28 )  
+calendar_dates <- seq(as.Date("28/03/2020", format = "%d/%m/%Y"), by = "days", length = 369 )  
 
 ### 3.2 Finally plot spatio-temporal distribution of estimated total IFR, in %, over time 
 ######## (-> for dates for which we have total IFR for at lest 25 countries)
@@ -193,7 +193,7 @@ setwd(./plots)
 
 dev.off()
 
-pdf(file="total-IFR-spatio-temporal-dist.pdf", width=20, height=10, family="Times", pointsize=16, onefile=TRUE)
+pdf(file="total-IFR-spatio-temporal-dist.pdf", width=20, height=10, family="Times", pointsize=20, onefile=TRUE)
 
 par(fig = c(0,1,0,1), las=1, mai=c(0.4,0.0,0.8,0.0))
 
@@ -216,8 +216,9 @@ text(x=215,y=3.85,c("Quantile 0.9"),font=2,pos=4,cex=0.8)
 text(x=215,y=(3.5+3.75)/2,c("Median"),font=2,pos=4,cex=0.8)
 text(x=255,y=(3.5+3.75)/2,c("Mean"),font=2,pos=4,cex=0.8)
 
-axis(side=1,at=seq(1,length(calendar_dates),7),labels=calendar_dates[seq(1,length(calendar_dates),7)],lwd=1,pos=0)
-axis(side=1,at=seq(1,length(calendar_dates),28),labels=calendar_dates[seq(1,length(calendar_dates),28)],lwd=3,pos=0)
+axis(side=1,at=seq(1,length(calendar_dates),7),labels=FALSE,lwd=1,pos=0)
+axis(side=1,at=seq(1,length(calendar_dates),28),labels=FALSE,lwd=3,pos=0)
+axis(side=1,at=seq(1,length(calendar_dates),28*2),labels=calendar_dates[seq(1,length(calendar_dates),28*2)],lwd=3,pos=0)
 axis(side=2,at=seq(0,4,0.5),labels=FALSE,lwd=1,pos=-10)
 axis(side=2,at=seq(0,4,1),labels=TRUE,lwd=3,pos=-10)
 
@@ -244,18 +245,11 @@ for(date in 1:length(dates_and_number_of_values_lt_24)){
 	points(x=current_x,y=mean(current_y[which(!is.na(current_y))]),pch=20,col=gray(0.6),cex=1.25,lwd=2)
 }
 
-text(x=285,y=total_IFR_array_Verity_scaled["South Korea","2021-01-13","central"],"South Korea",col=pal[1],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Australia","2021-01-13","central"],"Australia",col=pal[5],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Spain","2021-01-13","central"],"Spain",col=pal[2],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Mexico","2021-01-13","central"],"Mexico",col=pal[4],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Germany","2021-01-13","central"],"Germany",col=pal[2],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Austria","2021-01-13","central"],"Austria",col=pal[2],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Slovenia","2021-01-13","central"],"Slovenia",col=pal[2],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["Togo","2021-01-13","central"],"Togo",col=pal[3],font=2,cex=0.8,pos=4)  
-text(x=285,y=total_IFR_array_Verity_scaled["France","2021-01-13","central"],"France",col=pal[2],font=2,cex=0.8,pos=4)  
-text(x=164,y=total_IFR_array_Verity_scaled["Australia","2020-09-18","central"],"Australia",col=pal[5],font=2,cex=0.8,pos=3)  
-text(x=65,y=total_IFR_array_Verity_scaled["Canada","2020-05-29","central"],"Canada",col=pal[6],font=2,cex=0.8,pos=3)  
-text(x=140,y=total_IFR_array_Verity_scaled["Japan","2020-08-14","central"],"Japan",col=pal[1],font=2,cex=0.8,pos=4)  
+text(x=164,y=total_IFR_array_Verity_scaled["Australia","2020-09-18","central"],"Australia",col=pal[5],font=2,cex=1.0,pos=3)  
+text(x=65,y=total_IFR_array_Verity_scaled["Canada","2020-05-29","central"],"Canada",col=pal[6],font=2,cex=1.0,pos=3)  
+text(x=285,y=total_IFR_array_Verity_scaled["South Korea","2021-01-29","central"],"South Korea",col=pal[1],font=2,cex=1.0,pos=3)  
+text(x=140,y=total_IFR_array_Verity_scaled["Japan","2020-08-14","central"],"Japan",col=pal[1],font=2,cex=1.0,pos=4)  
+text(x=335,y=total_IFR_array_Verity_scaled["Slovenia","2021-02-27","central"],"Slovenia",col=pal[2],font=2,cex=1.0,pos=3)  
 
 #### distribution every four weeks:
 
@@ -287,8 +281,9 @@ text(x=140,y=total_IFR_array_Verity_scaled["Japan","2020-08-14","central"],"Japa
 	segments(x0=current_xx,x1=current_xx,y0=quantile(current_yy[which(!is.na(current_yy))],prob=c(0.1)),y1=quantile(current_yy[which(!is.na(current_yy))],prob=c(0.9)),col="black",lwd=2)
   }
 
-  axis(side=1,at=seq(1,length(calendar_dates),7),labels=calendar_dates[seq(1,length(calendar_dates),7)],lwd=1,pos=-2)
-  axis(side=1,at=seq(1,length(calendar_dates),28),labels=calendar_dates[seq(1,length(calendar_dates),28)],lwd=3,pos=-2)
+  axis(side=1,at=seq(1,length(calendar_dates),7),labels=FALSE,lwd=1,pos=-2)
+  axis(side=1,at=seq(1,length(calendar_dates),28),labels=FALSE,lwd=3,pos=-2)
+  axis(side=1,at=seq(1,length(calendar_dates),28*2),labels=calendar_dates[seq(1,length(calendar_dates),28*2)],lwd=3,pos=-2)
   axis(side=2,at=seq(-2,-1.0,1/4),labels=seq(0,40,10),lwd=2,pos=-10)
 
   text(x=140,y=-1,"Number of countries:",pos=3)
