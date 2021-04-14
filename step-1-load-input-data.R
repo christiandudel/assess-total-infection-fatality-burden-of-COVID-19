@@ -32,6 +32,8 @@ all_countries <- unique(dat$Country)
 
 source(here::here("input-data","countries_by_world_region.R"))
 
+all_countries <- all_countries[which(all_countries%in%countries_by_world_region[,1])]
+
 #
 ## 5. Load reference and scaled IFRs by age for all countries of interest:
 #
