@@ -396,11 +396,10 @@ dev.off()
 ## 4. Sensitivity of latest total IFR
 #### towards I_x based on either reported deaths (COVer-AGE-DB) or excess mortality deaths (STMF)
 
-## 4.1 Align country names between excess mortality deaths (STMF) and reported deaths (COVer-AGE-DB):
+## 4.1 Align country names between excess mortality deaths (estimated based on data of STMF) and reported deaths (COVer-AGE-DB):
 
 dimnames(excess_deaths)
 dimnames(excess_deaths)[[1]][which(dimnames(excess_deaths)[[1]]=="Republic of Korea")] <- "South Korea" 
-dimnames(excess_deaths)[[1]][which(dimnames(excess_deaths)[[1]]=="Northern Irland")] <- "Northern Ireland" 
 dimnames(excess_deaths)[[1]][which(dimnames(excess_deaths)[[1]]=="England_Wales")] <- "England and Wales" 
 
 ## 4.2 Compare set of countries and dates between reported and excess mortality deaths:  
@@ -450,14 +449,14 @@ deaths_array_share_95plus_of_90plus <- rowSums(deaths_array[,,as.character(seq(9
 		for(country in 1:length(all_countries)){
 			current_coi <- all_countries[country]  
 			if(length(which(dimnames(excess_deaths)[[1]]==current_coi))>0){
-				if((sum(excess_deaths[current_coi,as.character(current_date),"b",],na.rm=TRUE)>0) & length(excess_deaths[current_coi,as.character(current_date),"b",])==20){
+				if((sum(excess_deaths[current_coi,as.character(current_date),"b",],na.rm=TRUE)>0) & length(excess_deaths[current_coi,as.character(current_date),"b",])==19){
 					current_coi_current_date_deaths <- excess_deaths[current_coi,as.character(current_date),"b",]
-					if(is.na(current_coi_current_date_deaths["95"]) & !is.na(current_coi_current_date_deaths["90"])){
+					## if(is.na(current_coi_current_date_deaths["95"]) & !is.na(current_coi_current_date_deaths["90"])){
 						current_to_add_95plus <- current_coi_current_date_deaths["90"] * deaths_array_share_95plus_of_90plus[current_coi,as.character(current_date)]
 						current_to_replace_90 <- current_coi_current_date_deaths["90"] - current_to_add_95plus
 						current_coi_current_date_deaths["90"] <- current_to_replace_90 
 						current_coi_current_date_deaths["95"] <- current_to_add_95plus 
-					}
+					## }
 
 			#### Verity, scaled:
 
@@ -589,13 +588,13 @@ pdf(file=paste("total-IFR-difference-reported-vs-excessDeaths.pdf",sep=""), widt
 
 par(fig = c(0,1,0,1), las=1, mai=c(0.8,0.0,1.0,0.0))
 
-plot(x=-100,y=-100,ylim=c(1,30.5),xlim=c(-6.0,4.5),xlab="",ylab="",main="",axes=FALSE)
-title(bquote(atop("Difference in total IFR, in percentage points, estimating " ~ I[x],  "based on reported deaths (COVer-AGE-DB) and excess deaths (STMF)")),font.main=2)
+plot(x=-100,y=-100,ylim=c(1,30.5-4),xlim=c(-6.0,4.5),xlab="",ylab="",main="",axes=FALSE)
+title(bquote(atop("Difference in total IFR, in percentage points, estimating " ~ I[x],  "based on reported deaths and excess deaths")),font.main=2)
 
 axis(side=1,at=seq(-4,4,1),labels=FALSE,lwd=1,pos=0)
 axis(side=1,at=seq(-4,4,1),labels=TRUE,lwd=3,pos=0)
 
-yy <- 4
+yy <- 0
 
 segments(x0=-4,x1=4,y0=seq(1,23+yy,1),y1=seq(1,23+yy,1),lty=2,col=grey(0.8),lwd=1)
 segments(x0=seq(-4,4,1),x1=seq(-4,4,1),y0=0,y1=23+yy,lty=2,col=grey(0.8),lwd=1)
@@ -620,7 +619,7 @@ text(x=2.0,y=27.25+yy,c("Quantile 0.9"),font=2,pos=4,cex=0.8)
 text(x=2.0,y=26.5+yy,c("Median"),font=2,pos=4,cex=0.8)
 
 points(x=3.5,y=26.5+yy,pch=4,cex=1.4,,lwd=2,col="black")
-text(x=3.5,y=26.5+yy,"2021-01-10",font=2,pos=4,cex=0.8)
+text(x=3.5,y=26.5+yy,"2021-03-14",font=2,pos=4,cex=0.8)
 
 text(x=4.25,y=23.25+yy,"No. of values:",cex=0.8,pos=3)
 
@@ -641,6 +640,7 @@ for(coi in length(median_diff_val_largerThan_0_and_deaths_largerThan_199):1){
 	current_diff_nonNA <- current_diff_nonNA[which(deaths_per_date >= 200)] 
 	
 	if(length(current_diff_nonNA)>0){
+
 		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
 		text(x=-4.5, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 
 			pos=2,cex=1.0,font=2)	
@@ -653,14 +653,15 @@ for(coi in length(median_diff_val_largerThan_0_and_deaths_largerThan_199):1){
 
 		text(x=4,y=current_yy,length(current_diff_nonNA),cex=0.9,pos=4)
 
-		if(!is.na(current_diff_nonNA["2021-01-10"])){
-			points(x=current_diff_nonNA["2021-01-10"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+		if(!is.na(current_diff_nonNA["2021-03-14"])){
+			points(x=current_diff_nonNA["2021-03-14"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=1.0),cex=1.4,lwd=3)
 		}
-		current_yy <- current_yy + 1
-	} ## if
-} ## for coi
 
-dev.off()
+		current_yy <- current_yy + 1
+		
+	} ## if
+
+} ## for coi
 
 ##
 ##
