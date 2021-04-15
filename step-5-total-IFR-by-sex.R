@@ -252,7 +252,7 @@ plot(x=-100,y=-100,ylim=c(1,46),xlim=c(-3.0,3.5),xlab="",ylab="",main="",axes=FA
 title(bquote(atop("Difference in total IFR by sex, in percentage points")),font.main=2)
 axis(side=1,at=seq(-2,3,1),labels=FALSE,lwd=1,pos=0)
 axis(side=1,at=seq(-2,3,1),labels=TRUE,lwd=3,pos=0)
-yy <- 4
+yy <- 3
 segments(x0=-2,x1=3,y0=seq(1,37+yy,1),y1=seq(1,37+yy,1),lty=2,col=grey(0.8),lwd=1)
 segments(x0=seq(-2,3,0.5),x1=seq(-2,3,0.5),y0=0,y1=37+yy,lty=2,col=grey(0.8),lwd=1)
 segments(x0=0,x1=0,y0=0,y1=39+yy,col="black",lwd=3)
@@ -268,7 +268,7 @@ text(x=2.0,y=40.75+yy,c("Quantile 0.1"),font=2,pos=4,cex=0.8)
 text(x=2.0,y=43.25+yy,c("Quantile 0.9"),font=2,pos=4,cex=0.8)
 text(x=2.0,y=42+yy,c("Median"),font=2,pos=4,cex=0.8)
 points(x=2.9,y=42+yy,pch=4,cex=1.4,,lwd=2,col="black")
-text(x=2.9,y=42+yy,"2021-01-13",font=2,pos=4,cex=0.8)
+text(x=2.9,y=42+yy,"2021-03-31",font=2,pos=4,cex=0.8)
 text(x=3.25,y=38+yy,"No. of values:",cex=0.8,pos=3)
 current_yy <- 1
 for(coi in length(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_199):1){
@@ -301,8 +301,8 @@ for(coi in length(median_diff_by_sex_val_largerThan_0_and_deaths_f_largerThan_19
 
 			text(x=3.25,y=current_yy,length(current_diff_nonNA),cex=0.9,pos=4)
 
-			if(!is.na(current_diff_nonNA["2021-01-10"])){
-				points(x=current_diff_nonNA["2021-01-13"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+			if(!is.na(current_diff_nonNA["2021-03-31"])){
+				points(x=current_diff_nonNA["2021-03-31"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=1.0),cex=1.4,lwd=3)
 			}
 
 			current_yy <- current_yy + 1
