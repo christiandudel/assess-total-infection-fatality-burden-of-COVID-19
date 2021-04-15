@@ -155,12 +155,13 @@ pdf(file=paste("latest-total-IFR-sensitivity-towards-change-in-scaled-IFRx.pdf",
 
 par(fig = c(0,1,0,1), las=1, mai=c(0.6,3.2,1.0,0.4))
 
-	plot(x=-100,y=-100,xlim=c(-4.5,4),ylim=c(18,53),xlab="",ylab="",main="",axes=FALSE)
-	title(bquote(atop("Sensitivity of total infection fatality rate, in percentage points, ", "towards proportional changes in scaled " ~ IFR[x] ~ ", using data as of January 13, 2021")),font.main=2)
+	plot(x=-100,y=-100,xlim=c(-4.5,4),ylim=c(22,53),xlab="",ylab="",main="",axes=FALSE)
+	title(bquote(atop("Impact on latest IFR, in percentage points, ", "as a result of proportionally changing scaled " ~ IFR[x] ~ ", using data as of March 31, 2021")),font.main=2)
 
-	selected_coi_for_vis_by_mean_age <- c("Portugal","Slovenia","South Korea",
-					"France","Sweden","Australia","Chile",
-					"Colombia","Mexico","Philippines","Jordan")
+	selected_coi_for_vis_by_mean_age <- c("Italy","Germany","Slovenia",
+						"South Korea","France","Sweden","Australia",
+						"Colombia","Jamaica",
+						"Philippines","Jordan")
 
 	points(x=seq(-4.8,3.2,length=6),y=rep(53.2,6),pch=20,cex=1.8,col=pal[1:6])
 	text(x=seq(-4.8,3.2,length=6),y=rep(53.2,6),c(names(pal)[1:6]),font=2,pos=4,cex=0.65)
@@ -178,12 +179,11 @@ par(fig = c(0,1,0,1), las=1, mai=c(0.6,3.2,1.0,0.4))
 	text(x=1.5,y=51.5,"Central estimate",pos=4,cex=0.6)
 	text(x=1.5,y=50.5,"95% PI",pos=4,cex=0.6)
 
-par(fig = c(0,0.35,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
+par(fig = c(0,0.39,0,1), las=1, mai=c(0.6,0.0,1.4,0.0))
 
-	axis(side=1,at=seq(-3.5,3.5,0.5),labels=TRUE,lwd=3,pos=18)
-	axis(side=4,at=seq(18,48,1),labels=FALSE,lwd=1,pos=3.8,yaxt="n")
-	axis(side=4,at=seq(18,48,3),labels=TRUE,lwd=2,pos=3.8,yaxt="n")
-	axis(side=4,at=seq(18,48,6),labels=TRUE,lwd=3,pos=3.8,yaxt="n")
+	axis(side=1,at=seq(-3.5,3.5,0.5),labels=TRUE,lwd=3,pos=22)
+	axis(side=4,at=seq(22,48,1),labels=FALSE,lwd=1,pos=3.8,yaxt="n")
+	axis(side=4,at=seq(22,48,2),labels=TRUE,lwd=2,pos=3.8,yaxt="n")
 
 	segments(x0=seq(-3.5,3.5,0.5),x1=seq(-3.5,3.5,0.5),
 		y=18,y1=as.numeric(median_age[which(median_age[,"Region,.subregion,.country.or.area.*"]=="Portugal"),"2020"]),
@@ -249,12 +249,11 @@ par(fig = c(0,0.35,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 
 	} ## for country
 
-par(fig = c(0.32,0.67,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
+par(fig = c(0.3,0.69,0,1), las=1, mai=c(0.6,0.0,1.4,0.0))
 
-	axis(side=1,at=seq(-3.5,3.5,0.5),labels=TRUE,lwd=3,pos=18)
-	axis(side=4,at=seq(18,48,1),labels=FALSE,lwd=1,pos=3.8,yaxt="n")
-	axis(side=4,at=seq(18,48,3),labels=TRUE,lwd=2,pos=3.8,yaxt="n")
-	axis(side=4,at=seq(18,48,6),labels=TRUE,lwd=3,pos=3.8,yaxt="n")
+	axis(side=1,at=seq(-3.5,3.5,0.5),labels=TRUE,lwd=3,pos=22)
+	axis(side=4,at=seq(22,48,1),labels=FALSE,lwd=1,pos=3.8,yaxt="n")
+	axis(side=4,at=seq(22,48,2),labels=TRUE,lwd=2,pos=3.8,yaxt="n")
 
 	segments(x0=seq(-3.5,3.5,0.5),x1=seq(-3.5,3.5,0.5),
 		y=18,y1=as.numeric(median_age[which(median_age[,"Region,.subregion,.country.or.area.*"]=="Portugal"),"2020"]),
@@ -274,7 +273,6 @@ par(fig = c(0.32,0.67,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 			current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
 	
 			segments(x0=-3.5,x1=3.5,y0=current_median_age,y1=current_median_age,col=gray(0.6),lwd=1,lty=2)
-			## text(x=-3.5,y=as.numeric(current_median_age),paste(current_coi),pos=2,col=pal[current_pal],font=2)
 
 			for(sourceIFR in c("Levin")){
 
@@ -320,18 +318,18 @@ par(fig = c(0.32,0.67,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 
 	} ## for country
 
-par(fig = c(0.64,0.99,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
+par(fig = c(0.6,0.99,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 
-	axis(side=1,at=seq(-3.5,3.5,0.5),labels=TRUE,lwd=3,pos=18)
-	axis(side=4,at=seq(18,48,1),labels=FALSE,lwd=1,pos=3.8)
-	axis(side=4,at=seq(18,48,3),labels=TRUE,lwd=2,pos=3.8)
-	axis(side=4,at=seq(18,48,6),labels=TRUE,lwd=3,pos=3.8)
+	axis(side=1,at=seq(-3.5,3.5,0.5),labels=TRUE,lwd=3,pos=22)
+	axis(side=4,at=seq(22,48,1),labels=FALSE,lwd=1,pos=3.8)
+	axis(side=4,at=seq(22,48,2),labels=TRUE,lwd=2,pos=3.8)
 
 	segments(x0=seq(-3.5,3.5,0.5),x1=seq(-3.5,3.5,0.5),
 		y=18,y1=as.numeric(median_age[which(median_age[,"Region,.subregion,.country.or.area.*"]=="Portugal"),"2020"]),
 		col=gray(0.6),lwd=1,lty=2)
 
-	text(x=3.0,y=48.5,"Median age",pos=3,font=2)
+	text(x=3.0,y=49.25,"Population",pos=3,font=2)
+	text(x=3.0,y=48.5,"median age",pos=3,font=2)
 
 	segments(x0=0,x1=0,y0=18,y1=48,lwd=3,col="black")
 
@@ -347,7 +345,6 @@ par(fig = c(0.64,0.99,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 			current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
 	
 			segments(x0=-3.5,x1=3.5,y0=current_median_age,y1=current_median_age,col=gray(0.6),lwd=1,lty=2)
-			## text(x=-3.5,y=as.numeric(current_median_age),paste(current_coi),pos=2,col=pal[current_pal],font=2)
 
 			for(sourceIFR in c("Salje")){
 
