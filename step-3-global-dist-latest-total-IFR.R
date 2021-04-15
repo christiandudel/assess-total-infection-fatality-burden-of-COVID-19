@@ -393,8 +393,8 @@ par(fig = c(0.6,0.99,0,1), las=1, mai=c(0.6,0.0,1.4,0.4))
 dev.off()
 
 
-## 4. Sensitivity of latest total IFR
-#### towards I_x based on either reported deaths (COVer-AGE-DB) or excess mortality deaths (STMF)
+## 4. Sensitivity of IFR
+#### towards I_x based on either reported deaths (COVer-AGE-DB) or excess mortality deaths (estimated based on data of STMF)
 
 ## 4.1 Align country names between excess mortality deaths (estimated based on data of STMF) and reported deaths (COVer-AGE-DB):
 
@@ -665,6 +665,237 @@ for(coi in length(median_diff_val_largerThan_0_and_deaths_largerThan_199):1){
 
 ##
 ##
+
+
+## 5. Sensitivity of IFR
+#### towards approximating no. of infected individuals with confirmed cases 
+
+
+## 5.1 Get accumulated COVerAGE-DB confirmed cases by age (seq(0,95,5)) and date for both sexes combined:  
+
+  dat_cases <- dat %>% select(Country,Date,Sex,Age,Cases)
+
+#### 5.1.1 Table unique dates and corresponding number of countries with non-NA & non-0 case entries:  
+
+  cases_available <- matrix(0,nr=length(all_countries),nc=length(unique(dat_cases$Date)))
+  rownames(cases_available) <- all_countries
+  colnames(cases_available) <- as.character(sort(unique(dat_cases$Date)))
+
+  for(date in 1:length(sort(unique(dat_cases$Date)))){
+	print(date)
+	current_date <- sort(unique(dat_cases$Date))[date]
+	for(country in 1:length(all_countries)){
+		current_coi <- all_countries[country]  
+		if(current_coi %in% unique(dat_cases$Country)){
+			current_coi_cases <- (dat_cases[which(dat_cases$Country==current_coi),])
+			current_coi_current_date_cases <- pull(current_coi_cases[which(current_coi_cases$Date==current_date),"Cases"])
+			if(length(which(is.na(current_coi_current_date_cases)))==0 & sum(current_coi_current_date_cases,na.rm=TRUE)>0){
+				cases_available[current_coi,as.character(current_date)] <- 1
+			} ## if 
+		} ## if current_coi
+	} ## for country 
+  } ## for date 
+
+  cases_available
+
+#### 5.1.2 Use cases_available as indicator for calculating total IFR for particular countries and dates 
+#### when approximating I_x with C_x
+
+  row_names <- all_countries
+  column_names <- as.character(sort(unique(dat_deaths$Date)))
+  matrix_names <- seq(0,95,5)
+
+  cases_array <- array(NA,dim=c(length(all_countries),length(unique(dat_cases$Date)),length(seq(0,95,5))),
+								dimnames=list(row_names,column_names,matrix_names))
+
+########
+########
+
+  row_names <- all_countries
+  column_names <- as.character(sort(unique(dat_deaths$Date)))
+  matrix_names <- c("low95","central","up95")
+
+  total_IFR_array_Cx_Verity_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names))
+  total_IFR_array_Cx_Salje_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(c("low95","central","up95"))),
+ 								dimnames=list(row_names,column_names,matrix_names))
+  total_IFR_array_Cx_Levin_scaled <- array(NA,dim=c(length(all_countries),length(unique(dat_deaths$Date)),length(c("low95","central","up95"))),
+								dimnames=list(row_names,column_names,matrix_names))
+
+########
+########
+
+current_coi <- "Norway"
+
+  for(date in 1:length(sort(unique(dat_cases$Date)))){
+	print(date)
+	current_date <- sort(unique(dat_cases$Date))[date]
+	for(country in 1:length(all_countries)){
+		current_coi <- all_countries[country]  
+		if(cases_available[current_coi,as.character(current_date)]==1){
+			current_coi_cases <- (dat_cases[which(dat_cases$Country==current_coi),])
+			current_coi_current_date_cases <- pull(current_coi_cases[which(current_coi_cases$Date==current_date),"Cases"])
+
+			if(length(current_coi_current_date_cases)==21){
+
+			current_cases <- current_coi_current_date_cases[-length(current_coi_current_date_cases)] 
+			cases_array[current_coi,as.character(current_date),] <- current_cases
+
+			#### Verity, scaled:
+
+			## central IFR_x^COI:
+
+			current_total_ifr <- sum ( IFRs_Verity_scaled_central[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Verity_scaled[current_coi,as.character(current_date),"central"] <- current_total_ifr
+
+			## low95 IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Verity_scaled_low[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Verity_scaled[current_coi,as.character(current_date),"low95"] <- current_total_ifr
+
+			## up95 IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Verity_scaled_up[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Verity_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
+
+			#### Salje, scaled:
+
+			## central IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Salje_scaled_central[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Salje_scaled[current_coi,as.character(current_date),"central"] <- current_total_ifr
+
+			## low95 IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Salje_scaled_low[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Salje_scaled[current_coi,as.character(current_date),"low95"] <- current_total_ifr
+
+			## up95 IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Salje_scaled_up[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Salje_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
+
+			#### Levin, scaled:
+
+			## central IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Levin_scaled_central[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Levin_scaled[current_coi,as.character(current_date),"central"] <- current_total_ifr
+
+			## low95 IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Levin_scaled_low[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Levin_scaled[current_coi,as.character(current_date),"low95"] <- current_total_ifr
+
+			## up95 IFR_x^COI:
+			current_total_ifr <- sum ( IFRs_Levin_scaled_up[,current_coi] * current_cases / sum(current_cases) ) * 100
+			total_IFR_array_Cx_Levin_scaled[current_coi,as.character(current_date),"up95"] <- current_total_ifr
+
+			}## if length pulled cases
+		} ## if cases_available
+	} ## for country 
+  } ## for date 
+
+##
+##
+
+no_of_val <- sort(apply(X=(total_IFR_array_Verity_scaled[,,"central"]-total_IFR_array_Cx_Verity_scaled[,,"central"]),1,FUN=function(x){length(x[which(!is.na(x))])}),decreasing=TRUE)
+no_of_val_largerThan_0 <- no_of_val[which(no_of_val>0)]
+sum(no_of_val_largerThan_0)
+
+##
+## 5.2 Calculate difference in IFRs based on I_x and Cx and select data points with non-zero values for countries that have at least 200 deaths 
+
+no_of_val_largerThan_0_and_deaths_largerThan_199 <- NA
+median_val_largerThan_0_and_deaths_largerThan_199 <- NA
+
+for(coi in length(no_of_val_largerThan_0):1){
+	current_coi <- names(no_of_val_largerThan_0)[coi]
+	current_val <- (total_IFR_array_Verity_scaled[current_coi,,"central"]-total_IFR_array_Cx_Verity_scaled[current_coi,,"central"])
+	current_val_nonNA <- current_val[which(!is.na(current_val))]
+	current_dates <- names(current_val_nonNA)
+	if(length(current_dates)>1){
+		current_dates_deaths <- apply(deaths_array[current_coi,current_dates,],1,sum)
+	}
+	if(length(current_dates)==1){
+		current_dates_deaths <- sum(deaths_array[current_coi,current_dates,])
+	}
+	current_dates_deaths_lt_200 <- names(current_dates_deaths[which(current_dates_deaths>=200)]) 
+	current_val_nonNA <- current_val_nonNA[which(names(current_val_nonNA)%in%current_dates_deaths_lt_200)]  
+
+	if(length(current_val_nonNA)>0){
+		current_to_add <- length(current_val_nonNA)
+		names(current_to_add) <- current_coi
+		no_of_val_largerThan_0_and_deaths_largerThan_199 <- c(no_of_val_largerThan_0_and_deaths_largerThan_199,current_to_add)
+
+		current_median <- median(current_val_nonNA)
+		names(current_median) <- current_coi
+		median_val_largerThan_0_and_deaths_largerThan_199 <- c(median_val_largerThan_0_and_deaths_largerThan_199,current_median)
+	}
+
+} ## coi
+
+no_of_val_largerThan_0_and_deaths_largerThan_199 <- no_of_val_largerThan_0_and_deaths_largerThan_199[-1]
+median_val_largerThan_0_and_deaths_largerThan_199 <- median_val_largerThan_0_and_deaths_largerThan_199[-1]
+median_val_largerThan_0_and_deaths_largerThan_199
+
+##
+## 5.3 Visualize difference in IFR based on Ix and Cx:
+
+par(fig = c(0,1,0,1), las=1, mai=c(0.8,0.0,0.0,0.0))
+
+plot(x=-100,y=-100,ylim=c(1,57.0),xlim=c(-3.1,2.5),xlab="",ylab="",main="",axes=FALSE)
+## title(bquote(atop("Difference in total IFR, in percentage points, approximating" ~ I[x],  "with" ~ C[x])),font.main=2)
+
+axis(side=1,at=seq(-2,2,0.5),labels=FALSE,lwd=1,pos=0)
+axis(side=1,at=seq(-2,2,0.5),labels=TRUE,lwd=3,pos=0)
+
+yy <- 32
+
+segments(x0=-2,x1=2,y0=seq(1,23+yy,1),y1=seq(1,23+yy,1),lty=2,col=grey(0.8),lwd=1)
+segments(x0=seq(-2,2,0.5),x1=seq(-2,2,0.5),y0=0,y1=23+yy,lty=2,col=grey(0.8),lwd=1)
+segments(x0=0,x1=0,y0=0,y1=25.5+yy,col="black",lwd=3)
+
+text(x=0, y=24.8+yy, expression('IFR['*'IFR'[x]*',I'[x]*'] < IFR['*'IFR'[x]*',C'[x]*']'), col="black",pos=2,cex=0.9,font=2)	
+text(x=0, y=24.8+yy, expression('IFR['*'IFR'[x]*',I'[x]*'] > IFR['*'IFR'[x]*',C'[x]*']'), col="black",pos=4,cex=0.9,font=2)	
+
+text(x=2.0,y=24.8+yy,"No. of values:",cex=0.8,pos=4)
+
+current_yy <- 1
+
+for(coi in length(median_val_largerThan_0_and_deaths_largerThan_199):1){
+	current_coi <- names(rev(sort(median_val_largerThan_0_and_deaths_largerThan_199)))[coi]
+	current_diff <- (total_IFR_array_Verity_scaled[current_coi,,"central"]-total_IFR_array_Cx_Verity_scaled[current_coi,,"central"])
+	current_diff_nonNA <- current_diff[which(!is.na(current_diff))]
+	if(length(current_diff_nonNA)>1){
+		deaths_per_date <- apply(deaths_array[current_coi,names(current_diff_nonNA),],1,sum)
+		deaths_per_date_min_200 <- deaths_per_date[which(deaths_per_date >= 200)]
+	}
+	if(length(current_diff_nonNA)==1){
+		deaths_per_date <- sum(deaths_array[current_coi,names(current_diff_nonNA),])
+		deaths_per_date_min_200 <- deaths_per_date[which(deaths_per_date >= 200)]
+	}
+	current_diff_nonNA <- current_diff_nonNA[which(deaths_per_date >= 200)] 
+	
+	if(length(current_diff_nonNA)>0){
+
+		current_pal <- which(names(pal)==countries_by_world_region[which(countries_by_world_region[,1]==current_coi),2])
+		text(x=-2.0, y=current_yy, current_coi, col=adjustcolor(pal[current_pal],alpha.f=0.6), 
+			pos=2,cex=1.0,font=2)	
+		rect(xleft=median(current_diff_nonNA,na.rm=TRUE)-0.025,
+			xright=median(current_diff_nonNA,na.rm=TRUE)+0.025,
+			ybottom=current_yy-0.3,ytop=current_yy+0.3,col=adjustcolor(pal[current_pal],alpha.f=0.6),border=NA,lwd=3)
+		segments(x0=quantile(current_diff_nonNA,probs=(0.1),na.rm=TRUE),
+			x1=quantile(current_diff_nonNA,probs=(0.9),na.rm=TRUE),
+			y0=current_yy,y1=current_yy,col=adjustcolor(pal[current_pal],alpha.f=0.6),lwd=3)
+
+		text(x=2.3,y=current_yy,length(current_diff_nonNA),cex=0.9,pos=4)
+
+		if(!is.na(current_diff_nonNA["2021-03-31"])){
+			points(x=current_diff_nonNA["2021-03-31"],y=current_yy,pch=4,col=adjustcolor(pal[current_pal],alpha.f=1.0),cex=1.4,lwd=3)
+		}
+
+		current_yy <- current_yy + 1
+		
+	} ## if
+
+} ## for coi
+
+dev.off()
+
 
 
 
